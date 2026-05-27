@@ -13,10 +13,17 @@ click the preview tab and you can test the first actual working version
 
 Special Mentions: 
 (I know I'm gonna forget people, so i'll go back and add people when i know what to credit them with for contribution)
+
 SpaceOrca for introducing me to the concepts of interactive artifact generation.
+
 MagisterJericoh for simple suggestions that solved serious issues and allowed me to find concept in proof of function and for understanding the vision without writing it off.
+
 3rdEye Lounge for letting me test and for testing the spaghetticode first.
+
 Pliny's Basi server for inspiring me to make a generic browser agent harness due to all the terrible llm powered bots pretending to be users in there.
+
 Diagalon for asking me day after day to stop vibecoding because it is killing the industry.
+
 UltraZartex for sharing so much awesome research and getting me interested in a.i. again by proxy.
+
 ...to be continued.
