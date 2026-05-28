@@ -1,32 +1,50 @@
 Similar to:
 
 Perplexity's Comet Brower Assistant's Browser Control tool if it had a recordable macro mapper.
+
 Claude's browser driver, which is what Comet Browser uses as well.
+
 ChromeDriver, available for some browser control if you have google a.i. plus plan.
+
 WebDriver for as reliable as it can be for what parts it can do.
+
 Many other Browser-use mcps and harnesses where you have to trust inputting your api, but not here you don't.
 
 Use cases: 
 
 easy recordable macros of automated a.i. guided agentic 'skills'
+
 access via any browser with developer options for unpacking web extensions desktop or mobile
+
 multi-LLM-synthesis queries by using tabs that navigate to llm web app frontends 
+
 multi-instance-harness swarm co-working to complete tasks in 1 tab
+
 multitasking
-multi-agent-swarm orchestration with a web browser.
+
+multi-agent-swarm orchestration with a web browser
+
 having agents live chat on social media platforms
+
 no-cost-inference in google chrome on desktop via gemini nano api fallback
+
 no-cost-inference in other browsers if launched in the canvas tool of gemini's web app
 
 
 to use:
 
 Open gemini.google.com
+
 click the + symbol on the left of the chat
+
 click the Canvas option
+
 Tell gemini "web app"
+
 there will be 2 tabs on the side-by-side window that opens in the gemini chat, (preview/code) click code
+
 when it finishes loading paste in index.html's code
+
 click the preview tab and you can test the first actual working version
 
 
