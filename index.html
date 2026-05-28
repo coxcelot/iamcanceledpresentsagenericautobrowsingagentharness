@@ -166,6 +166,2634 @@
                 <span>Compile Extension ZIP</span>
             </button>
 
+            <button id="themeToggle" onclick="toggleTheme()" class="p-2 text-[var(--text-muted)] hover:text-[var(--text)] bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg transition-colors">
+            </button>
+        </div>
+    </header>
+
+    <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+    <main class="flex-grow grid grid-cols-1 lg:grid-cols-12 p-6 gap-6 overflow-hidden max-w-[1800px] w-full mx-auto">
+        
+        <!-- Left Side Control Pane: Operational Commands -->
+        <section class="lg:col-span-7 flex flex-col space-y-6 overflow-y-auto pr-2">
+            
+            <!-- Connection Setup Pane -->
+            <div class="premium-card p-5 space-y-4">
+                <div class="flex items-center justify-between border-b border-[var(--color-divider)] pb-2.5">
+                    <h2 class="text-xs font-extrabold tracking-wider text-[var(--color-primary)] uppercase font-mono-custom">1. Communication Endpoint Channel</h2>
+                    <span class="text-[9px] font-mono-custom bg-[var(--color-surface-2)] px-2.5 py-0.5 rounded text-[var(--color-text-muted)] border border-[var(--color-border)] uppercase">AUTOMATIC PROXIED HANDSHAKE</span>
+                </div>
+                
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="text-xs font-mono-custom text-[var(--color-text-muted)] flex-grow">
+                        Connect to the extension backend helper tool to query and bind browser windows immediately.
+                    </div>
+                    <button id="connectBtn" onclick="connectExtensionBridge()" class="w-full md:w-auto bg-[var(--color-primary)] hover:bg-cyan-600 text-[var(--color-bg)] font-bold text-xs py-2.5 px-6 rounded-lg transition-colors shadow-md font-mono-custom uppercase tracking-wider shrink-0">
+                        Connect Handshake
+                    </button>
+                </div>
+
+                <div class="border-t border-[var(--color-divider)] pt-4 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <label class="block text-[11px] font-bold text-[var(--color-text-muted)] font-mono-custom uppercase">Target Active Window Threads (Connected Tabs)</label>
+                        <button onclick="fetchActiveTabsList()" class="text-xs text-[var(--color-primary)] hover:underline flex items-center space-x-1 font-mono-custom">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.253 8H18"></path>
+                            </svg>
+                            <span>Query Active Tabs</span>
+                        </button>
+                    </div>
+                    <select id="tabSelector" onchange="onActiveTabChanged()" class="w-full text-xs font-mono-custom px-3 py-2 border border-[var(--color-border)] rounded-lg bg-[var(--color-surface-2)] text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary)]">
+                        <option value="">-- Run handshake connection to populate active chrome tabs --</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Unified Macro Skill Management Center -->
+            <div class="premium-card p-5 space-y-5">
+                <div class="flex items-center justify-between border-b border-[var(--color-divider)] pb-2.5">
+                    <h2 class="text-xs font-extrabold tracking-wider text-[var(--color-primary)] uppercase font-mono-custom">2. Skill Studio & Macro Editor</h2>
+                    <span class="text-[9px] font-mono-custom bg-emerald-500/10 px-2.5 py-0.5 rounded text-emerald-400 border border-emerald-500/20 uppercase tracking-wider">SEQUENTIAL AUTOMATION PIPELINE</span>
+                </div>
+
+                <!-- Recorder / Save Active Session Widget -->
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-[var(--color-surface-2)] p-3 rounded-lg border border-[var(--color-border)]">
+                    <div class="space-y-0.5">
+                        <h4 class="text-xs font-bold font-mono-custom text-[var(--color-text)]">Autopilot Macro Recorder</h4>
+                        <p class="text-[10px] text-[var(--color-text-muted)] font-mono-custom" id="recorderStatus">0 action steps pending in active memory session</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                        <button id="btnSaveSessionSkill" onclick="saveActiveSessionAsSkill()" disabled class="flex-1 sm:flex-initial text-[10px] bg-indigo-600/25 hover:bg-indigo-600 text-indigo-300 hover:text-white px-3.5 py-1.5 rounded-lg border border-indigo-500/30 transition-all font-mono-custom uppercase font-bold disabled:opacity-50 disabled:cursor-not-allowed">
+                            Save as Skill
+                        </button>
+                        <button onclick="createNewEmptySkill()" class="flex-1 sm:flex-initial text-[10px] bg-[var(--color-surface-offset)] hover:bg-[var(--color-surface-dynamic)] text-[var(--color-primary)] px-3.5 py-1.5 rounded-lg border border-[var(--color-border)] transition-all font-mono-custom uppercase font-bold">
+                            + Create Empty Skill
+                        </button>
+                        <button onclick="triggerSkillImport()" class="flex-1 sm:flex-initial text-[10px] bg-[var(--color-surface-offset)] hover:bg-[var(--color-surface-dynamic)] text-[var(--color-primary)] px-3.5 py-1.5 rounded-lg border border-[var(--color-border)] transition-all font-mono-custom uppercase font-bold">
+                            Import Skill
+                        </button>
+                        <input type="file" id="importSkillFileInput" class="hidden" accept=".json" onchange="handleSkillImportFile(event)">
+                    </div>
+                </div>
+
+                <!-- End-of-Loop Offer Export Banner -->
+                <div id="offerExportBanner" class="hidden bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 text-xs space-y-2.5 transition-all">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-emerald-400 font-mono-custom uppercase tracking-wider">🎉 Loop Completed Successfully!</span>
+                        <button onclick="dismissExportOffer()" class="text-[var(--color-text-muted)] hover:text-[var(--color-text)] font-mono-custom">✕</button>
+                    </div>
+                    <p class="text-[var(--color-text-muted)] font-mono-custom">
+                        Autopilot finished executing. Would you like to export these <span id="offerStepCount" class="text-emerald-400 font-bold">0</span> actions as a reusable skill macro?
+                    </p>
+                    <div class="flex gap-2">
+                        <button onclick="exportOfferAsSkill()" class="bg-emerald-600 hover:bg-emerald-700 text-[var(--color-bg)] font-bold px-3 py-1.5 rounded-md font-mono-custom text-[11px] uppercase transition-colors">
+                            Save as Skill
+                        </button>
+                        <button onclick="downloadOfferAsJSON()" class="bg-[var(--color-surface-offset)] hover:bg-[var(--color-surface-dynamic)] text-[var(--color-text)] border border-[var(--color-border)] px-3 py-1.5 rounded-md font-mono-custom text-[11px] uppercase transition-colors">
+                            Download JSON File
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Skill Selection and Management -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label class="block text-[11px] font-bold text-[var(--color-text-muted)] font-mono-custom uppercase">Select Workspace Skill</label>
+                        <select id="skillSelector" onchange="onActiveSkillChanged()" class="w-full text-xs font-mono-custom px-3 py-2 border border-[var(--color-border)] rounded-lg bg-[var(--color-surface-2)] text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary)]">
+                            <option value="">-- No custom skills created yet --</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end gap-2">
+                        <button onclick="renameActiveSkill()" class="flex-1 bg-[var(--color-surface-offset)] hover:bg-[var(--color-surface-dynamic)] text-[var(--color-text)] border border-[var(--color-border)] text-xs font-bold py-2 rounded-lg font-mono-custom">RENAME</button>
+                        <button onclick="deleteActiveSkill()" class="flex-1 bg-rose-950/30 hover:bg-rose-900 border border-rose-500/30 text-rose-400 text-xs font-bold py-2 rounded-lg font-mono-custom">DELETE SKILL</button>
+                    </div>
+                </div>
+
+                <!-- Live Step Editor Matrix (Visible only when skill is chosen) -->
+                <div id="skillEditorContainer" class="hidden border-t border-[var(--color-divider)] pt-4 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xs font-bold text-[var(--color-primary)] font-mono-custom uppercase tracking-wider" id="activeEditorTitle">Steps Editor</h3>
+                        <button onclick="addStepToActiveSkill()" class="text-[10px] bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-[var(--color-bg)] px-2.5 py-1 rounded font-mono-custom border border-emerald-500/20 uppercase font-bold transition-colors">
+                            + Add Action Step
+                        </button>
+                    </div>
+
+                    <!-- Steps List Area -->
+                    <div id="stepsListArea" class="space-y-3.5 max-h-[380px] overflow-y-auto pr-1"></div>
+                </div>
+
+                <!-- Prior Loops Memory Registry (Latest 2) -->
+                <div class="border-t border-[var(--color-divider)] pt-4 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <label class="block text-[11px] font-bold text-[var(--color-text-muted)] font-mono-custom uppercase tracking-wider">Prior Loops Memory (Latest 2 Runs)</label>
+                        <button onclick="clearPriorLoopsHistory()" class="text-[10px] text-rose-400 hover:underline font-mono-custom uppercase">Clear History</button>
+                    </div>
+                    <div id="priorLoopsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <!-- Dynamic loop entries mapped here -->
+                    </div>
+                </div>
+
+                <!-- Consecutive Multi-Skill Executor Console -->
+                <div class="border-t border-[var(--color-divider)] pt-4 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <label class="block text-[11px] font-bold text-[var(--color-text-muted)] font-mono-custom uppercase tracking-wider">Skill Consecutive Chain Executor</label>
+                        <button onclick="clearConsecutiveQueue()" class="text-[10px] text-rose-400 hover:underline font-mono-custom uppercase">Clear Queue</button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                        <!-- Left: Skill Pool Adders -->
+                        <div class="md:col-span-5 space-y-2">
+                            <span class="block text-[10px] text-[var(--color-text-faint)] font-mono-custom uppercase">1. Skill Pool (Click to Queue)</span>
+                            <div id="skillQueuePool" class="space-y-1.5 max-h-[110px] overflow-y-auto pr-1">
+                                <div class="text-[10px] text-[var(--color-text-faint)] italic font-mono-custom">Create a skill above to begin chaining...</div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Pipeline Queue Sequence -->
+                        <div class="md:col-span-7 space-y-2">
+                            <span class="block text-[10px] text-[var(--color-text-faint)] font-mono-custom uppercase">2. Active Chain Path</span>
+                            <div id="activeChainSequence" class="flex flex-wrap items-center gap-1.5 p-2 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg min-h-[44px]">
+                                <span class="text-[10px] text-[var(--color-text-muted)] italic font-mono-custom">Queue is empty. Select skills from the pool.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Looping Controllers and Main Run Thread Buttons -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-[var(--color-surface-2)] p-3 rounded-lg border border-[var(--color-border)]">
+                        <div>
+                            <label class="block text-[10px] text-[var(--color-text-muted)] font-mono-custom uppercase mb-1">Execution Loops</label>
+                            <input type="number" id="chainLoopCount" value="1" min="1" max="1000" class="w-full text-xs font-mono-custom px-3 py-1.5 border border-[var(--color-border)] rounded-lg bg-[var(--color-surface)] text-[var(--color-text)] focus:outline-none">
+                        </div>
+                        <div class="flex items-center space-x-2.5 pt-4">
+                            <input type="checkbox" id="chainLoopInfinite" onchange="toggleInfiniteLoopSetting()" class="w-4 h-4 rounded border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-primary)] focus:ring-[var(--color-primary)]">
+                            <label for="chainLoopInfinite" class="text-[11px] font-bold text-[var(--color-text-muted)] font-mono-custom uppercase">Loop Infinitely</label>
+                        </div>
+                        <div class="flex items-end">
+                            <button id="btnRunSkillChain" onclick="executeSkillChainSequence()" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs py-2 px-4 rounded-lg transition-colors shadow-md font-mono-custom uppercase">
+                                Run Skill Chain
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Custom Script Sandbox Evaluator inside editor context -->
+                <div class="border-t border-[var(--color-divider)] pt-4 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <label class="block text-[11px] font-bold text-[var(--color-text-muted)] font-mono-custom uppercase">Custom Script Sandbox Evaluation</label>
+                        <div class="flex space-x-1.5">
+                            <button onclick="setScriptShortcut('metadata')" class="text-[10px] bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-offset)] text-[var(--color-primary)] px-2.5 py-1 rounded font-mono-custom border border-[var(--color-border)]">Page Metadata</button>
+                            <button onclick="setScriptShortcut('forms')" class="text-[10px] bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-offset)] text-[var(--color-primary)] px-2.5 py-1 rounded font-mono-custom border border-[var(--color-border)]">Map Forms</button>
+                        </div>
+                    </div>
+                    <textarea id="scriptPayload" rows="3" class="w-full text-xs font-mono-custom p-3 border border-[var(--color-border)] rounded-lg bg-[var(--color-surface-2)] text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary)]" placeholder="return { title: document.title, url: window.location.href };"></textarea>
+                    <div class="flex justify-end">
+                        <button onclick="executeCustomCodeInTab()" class="bg-[var(--color-surface-offset)] hover:bg-[var(--color-surface-dynamic)] text-[var(--color-text)] border border-[var(--color-border)] text-xs font-bold py-1.5 px-4 rounded-lg transition-colors font-mono-custom uppercase shadow-md">
+                            Run Sandbox Script
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Harness Walkthrough -->
+            <div class="bg-indigo-500/5 dark:bg-[var(--color-surface-2)] rounded-xl p-5 border border-indigo-500/20 text-xs text-[var(--color-text)] space-y-3">
+                <h3 class="font-bold text-[var(--color-primary)] text-xs font-mono-custom flex items-center gap-1.5">
+                    <span>⚡ Harness Setup Walkthrough Guide</span>
+                </h3>
+                <ol class="list-decimal list-inside space-y-1.5 text-[var(--color-text-muted)] font-mono-custom text-[11px]">
+                    <li>Click <strong class="text-[var(--color-primary)]">"Compile Extension ZIP"</strong> at the top header area. This compiles and downloads the MV3 extension on-the-fly.</li>
+                    <li>Extract the resulting <code class="bg-[var(--color-surface-offset)] border border-[var(--color-border)] px-1 py-0.5 rounded text-[var(--color-primary)] font-mono-custom">zenspace-agent-bridge.zip</code> package to a local folder.</li>
+                    <li>Open Chrome and navigate to: <code class="bg-[var(--color-surface-offset)] border border-[var(--color-border)] px-1 py-0.5 rounded text-[var(--color-primary)] font-mono-custom">chrome://extensions/</code></li>
+                    <li>Toggle <strong class="text-[var(--text)]">"Developer mode"</strong> in the top-right corner.</li>
+                    <li>Click <strong class="text-[var(--text)]">"Load unpacked"</strong> and open your local extracted folder directory.</li>
+                    <li>Refresh this tab, click <strong class="text-[var(--color-primary)]">"Connect Handshake"</strong>, and you're fully connected without sandbox errors!</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Right Side Monitoring & Autopilot Panel -->
+        <section class="lg:col-span-5 flex flex-col space-y-4 overflow-hidden">
+            
+            <div class="flex border-b border-[var(--color-divider)] shrink-0 font-mono-custom text-xs">
+                <button id="tabBtnLogs" onclick="switchRightPaneTab('logs')" class="border-b-2 border-brand-500 px-4 py-2.5 font-bold text-[var(--color-primary)] focus:outline-none transition-all">
+                    LOGS STREAM
+                </button>
+                <button id="tabBtnDom" onclick="switchRightPaneTab('dom')" class="border-b-2 border-transparent px-4 py-2.5 font-bold text-[var(--color-text-muted)] hover:text-[var(--color-text)] focus:outline-none transition-all">
+                    LIVE DOM TREE
+                </button>
+                <button id="tabBtnAutopilot" onclick="switchRightPaneTab('autopilot')" class="border-b-2 border-transparent px-4 py-2.5 font-bold text-[var(--color-text-muted)] hover:text-[var(--color-text)] focus:outline-none transition-all">
+                    AUTO-PILOT
+                </button>
+            </div>
+
+            <!-- Content Area mapping pane tabs -->
+            <div class="flex-grow flex flex-col overflow-hidden min-h-[500px]">
+                
+                <!-- Tab View: System Telemetry Log Console -->
+                <div id="panelLogs" class="flex-grow flex flex-col bg-[var(--color-surface)] text-[var(--color-text)] font-mono-custom text-xs rounded-xl border border-[var(--color-border)] overflow-hidden shadow-inner">
+                    <div class="bg-[var(--color-surface-2)] px-4 py-3.5 flex items-center justify-between border-b border-[var(--color-border)] shrink-0">
+                        <span class="text-[var(--color-text-muted)] uppercase tracking-widest text-[10px] font-bold">System Telemetry Log Console</span>
+                        <button onclick="clearConsoleLogStream()" class="text-[10px] bg-[var(--color-surface-offset)] hover:bg-[var(--color-surface-dynamic)] text-[var(--color-primary)] px-3 py-1 rounded-md border border-[var(--color-border)] transition-colors">Clear</button>
+                    </div>
+                    <div id="consoleLogOutput" class="p-4 flex-grow overflow-y-auto space-y-2.5 selection:bg-brand-500/30 font-mono-custom">
+                        <div class="text-[var(--color-text-muted)]">[SYSTEM] Driver harness initialized. Establish automatic connection or devtools remote websocket session.</div>
+                    </div>
+                </div>
+
+                <!-- Tab View: Live Interactive DOM Tree -->
+                <div id="panelDom" class="hidden flex-grow flex flex-col bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl overflow-hidden shadow-sm">
+                    <div class="bg-[var(--color-surface-2)] px-4 py-3 flex items-center justify-between border-b border-[var(--color-border)] shrink-0">
+                        <div>
+                            <h3 class="text-xs font-bold text-[var(--color-text)] font-mono-custom">Live Interactive DOM Node Tree</h3>
+                            <p class="text-[10px] text-[var(--color-text-muted)] font-mono-custom">Interactive element click mappings</p>
+                        </div>
+                        <button onclick="refreshActiveTabDOMState()" class="flex items-center space-x-1.5 text-[11px] bg-[var(--color-primary)] text-[var(--color-bg)] font-bold px-3 py-1.5 rounded-md hover:bg-cyan-600 transition-colors font-mono-custom">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.253 8H18"></path>
+                            </svg>
+                            <span>SCRAPE DOM</span>
+                        </button>
+                    </div>
+
+                    <div id="domScrapedArea" class="p-4 flex-grow overflow-y-auto space-y-2.5 text-xs">
+                        <div class="text-center py-12 text-[var(--color-text-muted)] text-xs italic font-mono-custom">
+                            No active tab connected. Connect to the extension target link above to view interactive page elements.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab View: Unified Auto-Pilot Core System -->
+                <div id="panelAutopilot" class="hidden flex-grow flex flex-col bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl p-5 overflow-y-auto space-y-4 shadow-sm">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <div class="flex items-center justify-between">
+                                <label class="block text-[11px] font-bold text-[var(--color-text-muted)] font-mono-custom uppercase tracking-wider">Gemini API Token Key</label>
+                                <a href="https://aistudio.google.com/" target="_blank" class="text-[10px] text-[var(--color-primary)] hover:underline font-mono-custom">Retrieve Key</a>
+                            </div>
+                            <input type="password" id="geminiApiKey" placeholder="AIzaSy..." class="w-full text-xs font-mono-custom px-3 py-2 border border-[var(--color-border)] rounded-lg bg-[var(--color-surface-2)] text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary)]">
+                        </div>
+                        
+                        <div class="space-y-1">
+                            <label class="block text-[11px] font-bold text-[var(--color-text-muted)] font-mono-custom uppercase tracking-wider">Post-Action Step Delay (ms)</label>
+                            <input type="number" id="agentActionDelay" value="1500" min="500" max="10000" step="100" class="w-full text-xs font-mono-custom px-3 py-2 border border-[var(--color-border)] rounded-lg bg-[var(--color-surface-2)] text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary)]">
+                        </div>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="block text-[11px] font-bold text-[var(--color-text-muted)] font-mono-custom uppercase tracking-wider">Real-World Goal Directive Context</label>
+                        <textarea id="agentGoal" rows="2" class="w-full text-xs font-mono-custom p-3 border border-[var(--color-border)] rounded-lg bg-[var(--color-surface-2)] text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary)]" placeholder="e.g. Find the search field input, type 'Hacker News' into it, submit and wait for visual confirmation..."></textarea>
+                    </div>
+
+                    <!-- Autopilot Interactive Subsystem Orchestration Matrix Grid -->
+                    <div class="border-t border-[var(--color-divider)] pt-4 space-y-2">
+                        <label class="block text-[11px] font-bold text-[var(--color-text-muted)] font-mono-custom uppercase tracking-wider">Auto-pilot Subsystem Matrix Map</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center text-[10px] font-mono-custom font-bold">
+                            <div id="subsystem-auditor" class="p-2 rounded-lg bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-border)] transition-all">
+                                UX AUDITOR
+                            </div>
+                            <div id="subsystem-solver" class="p-2 rounded-lg bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-border)] transition-all">
+                                SOLVER
+                            </div>
+                            <div id="subsystem-architect" class="p-2 rounded-lg bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-border)] transition-all">
+                                ARCHITECT
+                            </div>
+                            <div id="subsystem-driver" class="p-2 rounded-lg bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-border)] transition-all">
+                                DRIVER
+                            </div>
+                            <div id="subsystem-reviewer" class="p-2 rounded-lg bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-border)] transition-all">
+                                REVIEWER
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visual Verification Screen Container -->
+                    <div class="space-y-2 border-t border-[var(--color-divider)] pt-4">
+                        <div class="flex justify-between items-center">
+                            <label class="block text-[11px] font-bold text-[var(--color-text-muted)] font-mono-custom uppercase tracking-wider">Visual Verification Screenshot Feed</label>
+                            <span id="visualVerificationStatus" class="text-[10px] font-mono-custom text-[var(--color-text-faint)] uppercase">Awaiting Action</span>
+                        </div>
+                        <div id="screenshotPreviewContainer" class="relative aspect-video flex flex-col items-center justify-center border-2 border-dashed border-[var(--color-border)] bg-[var(--color-surface-2)] rounded-lg overflow-hidden transition-colors hover:border-[var(--color-primary)]/40">
+                            <span id="noScreenshotPlaceholder" class="text-xs text-[var(--color-text-muted)] italic font-mono-custom">No verification state captured yet</span>
+                            <img id="agentScreenshotImg" class="hidden absolute inset-0 w-full h-full object-contain" src="" alt="Browser visual verification stream feedback" />
+                        </div>
+                    </div>
+
+                    <!-- Mode Control Panel -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <button id="btnStartAgent" onclick="initiateRealAgentRuntime('continuous')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 px-3 rounded-lg shadow-md transition-colors flex items-center justify-center space-x-1.5 font-mono-custom uppercase">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Launch Autopilot</span>
+                        </button>
+                        <button id="btnStopAgent" onclick="terminateRealAgentRuntime()" disabled class="bg-[var(--color-surface-offset)] text-[var(--color-text-faint)] border border-[var(--color-border)] font-bold text-xs py-2.5 px-3 rounded-lg cursor-not-allowed transition-colors flex items-center justify-center space-x-1.5 font-mono-custom uppercase">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636"></path>
+                            </svg>
+                            <span>Abort Autopilot</span>
+                        </button>
+                    </div>
+
+                    <!-- Step-by-Step Tool Options -->
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="runAutopilotAuditSubstep()" class="bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-offset)] text-[var(--color-text)] border border-[var(--color-border)] text-[10px] font-bold py-2 rounded-lg font-mono-custom uppercase">
+                            UX Audit View
+                        </button>
+                        <button onclick="runAutopilotSolverSubstep()" class="bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-offset)] text-[var(--color-text)] border border-[var(--color-border)] text-[10px] font-bold py-2 rounded-lg font-mono-custom uppercase">
+                            Solve Targets
+                        </button>
+                        <button onclick="runAutopilotArchitectSubstep()" class="bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-offset)] text-[var(--color-text)] border border-[var(--color-border)] text-[10px] font-bold py-2 rounded-lg font-mono-custom uppercase">
+                            Dev JS Code
+                        </button>
+                    </div>
+
+                    <!-- Autopilot Real-time Thoughts Console -->
+                    <div class="border-t border-[var(--color-divider)] pt-4 space-y-2">
+                        <div class="flex justify-between items-center text-[11px] font-mono-custom">
+                            <span class="text-[var(--color-text-muted)] font-bold">Autonomous Loop Status:</span>
+                            <span id="agentStepStatus" class="font-bold text-[var(--color-primary)] uppercase">Ready</span>
+                        </div>
+                        <div class="bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg p-3 text-[11px] font-mono-custom space-y-2 text-[var(--color-text-muted)]">
+                            <div class="text-[var(--color-primary)] font-bold uppercase text-[9px]">Autopilot Orchestrator Log:</div>
+                            <div id="aiDiagnosticsBox" class="italic">Ready to begin processing. Supply an API token or run simulated targets out-of-the-box.</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        let isConnected = false;
+        let currentTabId = null;
+        let tabCollection = [];
+        let agentActive = false;
+        let agentTimer = null;
+        let latestScreenshotBase64 = null;
+
+        // Skill Studio Engine Memory States
+        let skills = {}; 
+        let currentAutopilotSessionSteps = []; 
+        let selectedSkillsForChain = []; 
+        let chainRunning = false;
+        let activeChainTimeout = null;
+
+        // History Registry for Completed Loops
+        let priorLoops = [];
+        let pendingExportSteps = [];
+
+        const pendingRequests = new Map();
+
+        // Global uncaught syntax and logic handler to capture and stream browser pipeline errors seamlessly
+        window.addEventListener('error', (event) => {
+            logConsoleEvent('GLOBAL', event.message || 'Uncaught error occurred inside execution thread context', 'error');
+        });
+
+        // Listen for communication thread proxy events from the content script
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.source === 'zenspace-content-script') {
+                const { requestId, response } = event.data;
+                if (pendingRequests.has(requestId)) {
+                    const callback = pendingRequests.get(requestId);
+                    pendingRequests.delete(requestId);
+                    if (callback) callback(response);
+                }
+            }
+        });
+
+        // Relaying message calls safely via window.postMessage into the frame
+        function sendViaPostMessageBridge(payload, callback) {
+            const requestId = 'req_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+            if (callback) {
+                pendingRequests.set(requestId, callback);
+                setTimeout(() => {
+                    if (pendingRequests.has(requestId)) {
+                        const cb = pendingRequests.get(requestId);
+                        pendingRequests.delete(requestId);
+                        cb({ status: 'error', error: 'Response timed out. Please verify that the bridge helper extension is loaded unpacked and active, and refresh this tab.' });
+                    }
+                }, 4000);
+            }
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                    source: 'zenspace-page',
+                    requestId: requestId,
+                    payload: payload
+                }, '*');
+            }
+            window.postMessage({
+                source: 'zenspace-page',
+                requestId: requestId,
+                payload: payload
+            }, '*');
+        }
+
+        function callExtension(payload, callback) {
+            sendViaPostMessageBridge(payload, callback);
+        }
+
+        const sunIcon = `
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"></path>
+            </svg>
+        `;
+
+        const moonIcon = `
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+            </svg>
+        `;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initThemePreference();
+            logConsoleEvent('SYSTEM', 'Autonomous controller engine ready. Loaded unpacked extension proxy expected.');
+            setScriptShortcut('metadata');
+
+            const savedKey = localStorage.getItem('zenspace_gemini_key');
+            if (savedKey) {
+                document.getElementById('geminiApiKey').value = savedKey;
+            }
+
+            // Load saved skills from LocalStorage if they exist
+            loadSkillsFromStorage();
+            rebuildSkillSelectorsAndPools();
+
+            // Load loops history
+            loadPriorLoopsFromStorage();
+            renderPriorLoopsUI();
+            
+            setTimeout(connectExtensionBridge, 500);
+        });
+
+        function triggerToastNotification(title, message, isSuccess = true) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `p-4 rounded-xl border shadow-lg max-w-sm transition-all duration-300 transform translate-y-2 opacity-0 flex flex-col space-y-1 pointer-events-auto ${
+                isSuccess 
+                ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400' 
+                : 'bg-rose-500/15 border-rose-500/30 text-rose-400'
+            }`;
+            toast.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase tracking-wider font-mono-custom">${title}</span>
+                    <button class="text-[10px] opacity-75 hover:opacity-100 font-mono-custom" onclick="this.parentElement.parentElement.remove()">✕</button>
+                </div>
+                <span class="text-xs font-mono-custom">${message}</span>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 50);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        function initThemePreference() {
+            const toggleBtn = document.getElementById('themeToggle');
+            if (localStorage.getItem('theme') === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.documentElement.classList.remove('dark');
+                toggleBtn.innerHTML = moonIcon;
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.documentElement.classList.add('dark');
+                toggleBtn.innerHTML = sunIcon;
+            }
+        }
+
+        function toggleTheme() {
+            const toggleBtn = document.getElementById('themeToggle');
+            if (document.documentElement.getAttribute('data-theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                toggleBtn.innerHTML = moonIcon;
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                toggleBtn.innerHTML = sunIcon;
+            }
+        }
+
+        function logConsoleEvent(origin, text, status = 'info') {
+            const output = document.getElementById('consoleLogOutput');
+            const time = new Date().toLocaleTimeString();
+            let color = 'text-[var(--color-text)]';
+            if (status === 'error' ) color = 'text-rose-400 font-bold';
+            if (status === 'success') color = 'text-emerald-400';
+            if (status === 'warn') color = 'text-amber-400';
+
+            const block = document.createElement('div');
+            block.className = 'py-1 border-b border-[var(--color-divider)] flex space-x-2 font-mono-custom';
+            block.innerHTML = `
+                <span class="text-[var(--color-text-muted)] text-[10px] shrink-0">[${time}]</span>
+                <span class="text-[var(--color-primary)] font-bold shrink-0 text-[10px]">[${origin}]</span>
+                <span class="${color} break-all text-[11px]">${escapeHTMLString(text)}</span>
+            `;
+            output.appendChild(block);
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function clearConsoleLogStream() {
+            document.getElementById('consoleLogOutput').innerHTML = '<div class="text-[var(--color-text-muted)] font-mono-custom">[SYSTEM] Live tracking logs cleared.</div>';
+        }
+
+        function escapeHTMLString(str) {
+            return str.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        async function connectExtensionBridge() {
+            logConsoleEvent('BRIDGE', 'Testing secure automatic postMessage handshake proxy...');
+            setConnectionStatus(false, 'BRIDGE: PINGING');
+
+            let maxHandshakeAttempts = 3;
+            let successFlag = false;
+
+            for (let i = 1; i <= maxHandshakeAttempts; i++) {
+                logConsoleEvent('BRIDGE', `Handshake validation sweep ${i}/${maxHandshakeAttempts}...`);
+
+                const pingResult = await new Promise((resolve) => {
+                    callExtension({ action: 'ping' }, (response) => {
+                        resolve(response);
+                    });
+                });
+
+                if (pingResult && pingResult.status === 'ok') {
+                    successFlag = true;
+                    logConsoleEvent('BRIDGE', `Success! Automatic proxy link connected successfully. Worker Version: [${pingResult.version || '1.2.0'}]`, 'success');
+                    triggerToastNotification('Bridge Secured', 'Dynamic proxy connection confirmed.', true);
+                    setConnectionStatus(true, 'BRIDGE: ONLINE');
+                    fetchActiveTabsList();
+                    break;
+                } else {
+                    await new Promise(r => setTimeout(r, 600));
+                }
+            }
+
+            if (!successFlag) {
+                logConsoleEvent('BRIDGE', 'Proxy Handshake failed. Ensure the bridge helper extension is loaded unpacked and active, then refresh this tab.', 'error');
+                setConnectionStatus(false, 'BRIDGE: OFFLINE');
+            }
+        }
+
+        function setConnectionStatus(active, message) {
+            isConnected = active;
+            const pill = document.getElementById('statusPill');
+            const dot = document.getElementById('statusDot');
+            const label = document.getElementById('statusText');
+
+            label.innerText = message;
+            if (active) {
+                pill.className = "flex items-center space-x-2 bg-emerald-500/10 border border-emerald-500/30 px-3.5 py-1.5 rounded-full text-xs font-semibold text-emerald-400 font-mono-custom transition-all duration-300";
+                dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse glowing-dot";
+            } else {
+                pill.className = "flex items-center space-x-2 bg-rose-500/10 border border-rose-500/30 px-3.5 py-1.5 rounded-full text-xs font-semibold text-rose-400 font-mono-custom transition-all duration-300";
+                dot.className = "w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse glowing-dot";
+            }
+        }
+
+        function fetchActiveTabsList() {
+            if (!isConnected) {
+                triggerToastNotification('Action Blocked', 'Bridge must be connected first.', false);
+                return;
+            }
+
+            callExtension({ action: 'list_tabs' }, (response) => {
+                const selector = document.getElementById('tabSelector');
+                selector.innerHTML = '';
+
+                if (response && response.status === 'ok' && response.tabs && response.tabs.length > 0) {
+                    tabCollection = response.tabs;
+                    response.tabs.forEach(tab => {
+                        const option = document.createElement('option');
+                        option.value = tab.id;
+                        option.innerText = `ID: ${tab.id} | ${tab.title || 'Untitled'} (${tab.url || 'Blank URL'})`;
+                        selector.appendChild(option);
+                    });
+                    currentTabId = response.tabs[0].id;
+                    logConsoleEvent('BRIDGE', `Discovered active browser contexts. Selected Tab ID: ${currentTabId}`, 'success');
+                    onActiveTabChanged();
+                } else {
+                    selector.innerHTML = '<option value="">-- No open tabs reported by extension --</option>';
+                    logConsoleEvent('BRIDGE', 'No active contexts returned by the worker.', 'warn');
+                }
+            });
+        }
+
+        function onActiveTabChanged() {
+            const selector = document.getElementById('tabSelector');
+            if (selector.value) {
+                currentTabId = parseInt(selector.value, 10);
+                logConsoleEvent('SYSTEM', `Selected Tab context updated to ID: ${currentTabId}`);
+                refreshActiveTabDOMState();
+            }
+        }
+
+        function loadSkillsFromStorage() {
+            try {
+                const localData = localStorage.getItem('zenspace_skills_v1');
+                if (localData) {
+                    skills = JSON.parse(localData);
+                } else {
+                    skills = {
+                        "Wikipedia Intro Search": {
+                            id: "wiki_intro",
+                            name: "Wikipedia Intro Search",
+                            steps: [
+                                { action: "navigate", url: "https://en.wikipedia.org" },
+                                { action: "input", selector: "input[name='search']", text: "Generative Artificial Intelligence" },
+                                { action: "key_press", key: "Enter" }
+                            ]
+                        }
+                    };
+                    saveSkillsToStorage();
+                }
+            } catch (err) {
+                console.error("Failed to parse LocalStorage Skills:", err);
+            }
+        }
+
+        function saveSkillsToStorage() {
+            localStorage.setItem('zenspace_skills_v1', JSON.stringify(skills));
+        }
+
+        function rebuildSkillSelectorsAndPools() {
+            const selector = document.getElementById('skillSelector');
+            const pool = document.getElementById('skillQueuePool');
+
+            selector.innerHTML = '<option value="">-- Choose active skill macro to edit --</option>';
+            pool.innerHTML = '';
+
+            const skillKeys = Object.keys(skills);
+
+            if (skillKeys.length === 0) {
+                pool.innerHTML = '<div class="text-[10px] text-[var(--color-text-faint)] italic font-mono-custom">Create a skill above to begin chaining...</div>';
+                document.getElementById('skillEditorContainer').classList.add('hidden');
+                return;
+            }
+
+            skillKeys.forEach(key => {
+                const skill = skills[key];
+                
+                const opt = document.createElement('option');
+                opt.value = skill.id;
+                opt.innerText = skill.name;
+                selector.appendChild(opt);
+
+                const poolItem = document.createElement('button');
+                poolItem.className = "w-full text-left p-2 bg-[var(--color-surface)] hover:bg-[var(--color-surface-offset)] rounded text-[10px] font-mono-custom text-[var(--color-text)] border border-[var(--color-border)] flex justify-between items-center transition-all group";
+                poolItem.type = "button";
+                poolItem.onclick = () => queueSkillForConsecutiveRun(skill.id);
+                poolItem.innerHTML = `
+                    <span class="truncate font-bold">${skill.name}</span>
+                    <span class="text-[9px] text-[var(--color-primary)] opacity-0 group-hover:opacity-100 font-bold transition-opacity">+ ADD TO CHAIN</span>
+                `;
+                pool.appendChild(poolItem);
+            });
+        }
+
+        function createNewEmptySkill() {
+            const skillName = prompt("Enter a name for your new automation Skill:", "Custom Action Sequence");
+            if (!skillName || !skillName.trim()) return;
+
+            const safeKey = skillName.trim();
+            const id = 'skill_' + Date.now();
+
+            if (skills[safeKey]) {
+                alert("A skill with that name already exists in memory registry.");
+                return;
+            }
+
+            skills[safeKey] = {
+                id: id,
+                name: safeKey,
+                steps: [
+                    { action: "navigate", url: "https://news.ycombinator.com" }
+                ]
+            };
+
+            saveSkillsToStorage();
+            rebuildSkillSelectorsAndPools();
+            document.getElementById('skillSelector').value = id;
+            onActiveSkillChanged();
+            triggerToastNotification("Skill Created", `"${safeKey}" initialized.`, true);
+        }
+
+        function saveActiveSessionAsSkill() {
+            if (currentAutopilotSessionSteps.length === 0) {
+                triggerToastNotification("No Steps Detected", "The memory session buffer is currently empty.", false);
+                return;
+            }
+
+            const skillName = prompt("Save these autopilot steps as a reusable Skill name:", "AI Captured Task Path");
+            if (!skillName || !skillName.trim()) return;
+
+            const safeKey = skillName.trim();
+            const id = 'skill_' + Date.now();
+
+            skills[safeKey] = {
+                id: id,
+                name: safeKey,
+                steps: JSON.parse(JSON.stringify(currentAutopilotSessionSteps))
+            };
+
+            saveSkillsToStorage();
+            rebuildSkillSelectorsAndPools();
+            document.getElementById('skillSelector').value = id;
+            onActiveSkillChanged();
+
+            currentAutopilotSessionSteps = [];
+            updateAutopilotSessionCounter();
+
+            triggerToastNotification("Saved Macro", `Saved ${skills[safeKey].steps.length} steps as custom skill!`, true);
+        }
+
+        function triggerSkillImport() {
+            document.getElementById('importSkillFileInput').click();
+        }
+
+        function handleSkillImportFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (!parsed.steps || !Array.isArray(parsed.steps)) {
+                        alert("Invalid file format. Must contain a 'steps' array.");
+                        return;
+                    }
+
+                    const name = parsed.name || prompt("Enter a name for the imported Skill:", "Imported Action Skill") || "Imported Skill " + Date.now();
+                    const safeKey = name.trim();
+                    const id = 'skill_' + Date.now();
+
+                    if (skills[safeKey]) {
+                        alert("A skill with this name already exists in your library.");
+                        return;
+                    }
+
+                    skills[safeKey] = {
+                        id: id,
+                        name: safeKey,
+                        steps: parsed.steps
+                    };
+
+                    saveSkillsToStorage();
+                    rebuildSkillSelectorsAndPools();
+                    document.getElementById('skillSelector').value = id;
+                    onActiveSkillChanged();
+
+                    triggerToastNotification("Import Successful", `Skill "${safeKey}" imported to workspace.`, true);
+                } catch (err) {
+                    alert("Failed to parse JSON file: " + err.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function updateAutopilotSessionCounter() {
+            const count = currentAutopilotSessionSteps.length;
+            const label = document.getElementById('recorderStatus');
+            const btn = document.getElementById('btnSaveSessionSkill');
+
+            label.innerText = `${count} action steps pending in active memory session`;
+            if (count > 0) {
+                btn.disabled = false;
+                btn.className = "flex-1 sm:flex-initial text-[10px] bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-1.5 rounded-lg border border-indigo-500/30 transition-all font-mono-custom uppercase font-bold";
+            } else {
+                btn.disabled = true;
+                btn.className = "flex-1 sm:flex-initial text-[10px] bg-indigo-600/25 text-indigo-300 px-3.5 py-1.5 rounded-lg border border-indigo-500/30 transition-all font-mono-custom uppercase font-bold opacity-50 cursor-not-allowed";
+            }
+        }
+
+        let selectedActiveSkillId = null;
+
+        function onActiveSkillChanged() {
+            const selector = document.getElementById('skillSelector');
+            const targetId = selector.value;
+            selectedActiveSkillId = targetId;
+
+            const editor = document.getElementById('skillEditorContainer');
+
+            if (!targetId) {
+                editor.classList.add('hidden');
+                return;
+            }
+
+            editor.classList.remove('hidden');
+            renderActiveSkillSteps();
+        }
+
+        function getActiveSkillObject() {
+            if (!selectedActiveSkillId) return null;
+            return Object.values(skills).find(s => s.id === selectedActiveSkillId);
+        }
+
+        function renderActiveSkillSteps() {
+            const skill = getActiveSkillObject();
+            if (!skill) return;
+
+            document.getElementById('activeEditorTitle').innerText = `${skill.name} Steps`;
+
+            const area = document.getElementById('stepsListArea');
+            area.innerHTML = '';
+
+            if (skill.steps.length === 0) {
+                area.innerHTML = `
+                    <div class="text-center py-6 text-[var(--color-text-faint)] italic font-mono-custom">
+                        No steps added to this skill yet. Add one to begin.
+                    </div>`;
+                return;
+            }
+
+            skill.steps.forEach((step, idx) => {
+                const card = document.createElement('div');
+                card.className = "bg-[var(--color-surface-2)] p-3 rounded-lg border border-[var(--color-border)] space-y-3 relative";
+                
+                const header = document.createElement('div');
+                header.className = "flex justify-between items-center pb-2 border-b border-[var(--color-divider)]";
+                header.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <span class="text-[10px] bg-[var(--color-surface-offset)] text-[var(--color-text-muted)] border border-[var(--color-border)] px-1.5 py-0.5 rounded font-mono-custom font-bold">#${idx + 1}</span>
+                        <span class="text-[10px] font-bold font-mono-custom text-[var(--color-primary)] uppercase">${step.action}</span>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                        <button onclick="moveSkillStep(${idx}, -1)" class="p-1 hover:bg-[var(--color-surface-offset)] rounded text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors" title="Move Up">▲</button>
+                        <button onclick="moveSkillStep(${idx}, 1)" class="p-1 hover:bg-[var(--color-surface-offset)] rounded text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors" title="Move Down">▼</button>
+                        <button onclick="deleteSkillStep(${idx})" class="p-1 hover:bg-rose-950/40 rounded text-rose-400 transition-colors" title="Delete Step">✕</button>
+                    </div>
+                `;
+                card.appendChild(header);
+
+                const body = document.createElement('div');
+                body.className = "grid grid-cols-1 sm:grid-cols-2 gap-3";
+
+                const selectDiv = document.createElement('div');
+                selectDiv.className = "space-y-1";
+                selectDiv.innerHTML = `<label class="block text-[9px] font-bold text-[var(--color-text-muted)] uppercase font-mono-custom">Action Matrix</label>`;
+                const actSelect = document.createElement('select');
+                actSelect.className = "w-full text-xs font-mono-custom px-2 py-1.5 border border-[var(--color-border)] rounded-md bg-[var(--color-surface)] text-[var(--color-text)] focus:outline-none";
+                ["navigate", "click", "input", "type_text", "key_press", "key_combo", "execute_script"].forEach(act => {
+                    const opt = document.createElement('option');
+                    opt.value = act;
+                    opt.innerText = act.toUpperCase();
+                    if (act === step.action) opt.selected = true;
+                    actSelect.appendChild(opt);
+                });
+                actSelect.onchange = (e) => updateStepFieldValue(idx, 'action', e.target.value);
+                selectDiv.appendChild(actSelect);
+                body.appendChild(selectDiv);
+
+                if (step.action === 'navigate') {
+                    const div = document.createElement('div');
+                    div.className = "space-y-1";
+                    div.innerHTML = `
+                        <label class="block text-[9px] font-bold text-[var(--color-text-muted)] uppercase font-mono-custom">URL Destination</label>
+                        <input type="text" value="${step.url || ''}" onchange="updateStepFieldValue(${idx}, 'url', this.value)" class="w-full text-xs font-mono-custom px-2 py-1 border border-[var(--color-border)] rounded-md bg-[var(--color-surface)] text-[var(--color-text)] focus:outline-none">
+                    `;
+                    body.appendChild(div);
+                } 
+                else if (step.action === 'click') {
+                    const div = document.createElement('div');
+                    div.className = "space-y-1";
+                    div.innerHTML = `
+                        <label class="block text-[9px] font-bold text-[var(--color-text-muted)] uppercase font-mono-custom">CSS Selector</label>
+                        <input type="text" value="${step.selector || ''}" onchange="updateStepFieldValue(${idx}, 'selector', this.value)" class="w-full text-xs font-mono-custom px-2 py-1 border border-[var(--color-border)] rounded-md bg-[var(--color-surface)] text-[var(--color-text)] focus:outline-none">
+                    `;
+                    body.appendChild(div);
+                } 
+                else if (step.action === 'input') {
+                    const div1 = document.createElement('div');
+                    div1.className = "space-y-1";
+                    div1.innerHTML = `
+                        <label class="block text-[9px] font-bold text-[var(--color-text-muted)] uppercase font-mono-custom">CSS Selector</label>
+                        <input type="text" value="${step.selector || ''}" onchange="updateStepFieldValue(${idx}, 'selector', this.value)" class="w-full text-xs font-mono-custom px-2 py-1 border border-[var(--color-border)] rounded-md bg-[var(--color-surface)] text-[var(--color-text)] focus:outline-none">
+                    `;
+                    body.appendChild(div1);
+
+                    const div2 = document.createElement('div');
+                    div2.className = "space-y-1 col-span-1 sm:col-span-2";
+                    div2.innerHTML = `
+                        <label class="block text-[9px] font-bold text-[var(--color-text-muted)] uppercase font-mono-custom">Text Value</label>
+                        <input type="text" value="${step.text || ''}" onchange="updateStepFieldValue(${idx}, 'text', this.value)" class="w-full text-xs font-mono-custom px-2 py-1 border border-[var(--color-border)] rounded-md bg-[var(--color-surface)] text-[var(--color-text)] focus:outline-none">
+                    `;
+                    body.appendChild(div2);
+                }
+                else if (step.action === 'type_text') {
+                    const div = document.createElement('div');
+                    div.className = "space-y-1";
+                    div.innerHTML = `
+                        <label class="block text-[9px] font-bold text-[var(--color-text-muted)] uppercase font-mono-custom">Type Text String</label>
+                        <input type="text" value="${step.text || ''}" onchange="updateStepFieldValue(${idx}, 'text', this.value)" class="w-full text-xs font-mono-custom px-2 py-1 border border-[var(--color-border)] rounded-md bg-[var(--color-surface)] text-[var(--color-text)] focus:outline-none">
+                    `;
+                    body.appendChild(div);
+                }
+                else if (step.action === 'key_press') {
+                    const div = document.createElement('div');
+                    div.className = "space-y-1";
+                    div.innerHTML = `
+                        <label class="block text-[9px] font-bold text-[var(--color-text-muted)] uppercase font-mono-custom">Single Key (Enter, Tab, Escape)</label>
+                        <input type="text" value="${step.key || ''}" onchange="updateStepFieldValue(${idx}, 'key', this.value)" class="w-full text-xs font-mono-custom px-2 py-1 border border-[var(--color-border)] rounded-md bg-[var(--color-surface)] text-[var(--color-text)] focus:outline-none">
+                    `;
+                    body.appendChild(div);
+                }
+                else if (step.action === 'key_combo') {
+                    const div = document.createElement('div');
+                    div.className = "space-y-1";
+                    div.innerHTML = `
+                        <label class="block text-[9px] font-bold text-[var(--color-text-muted)] uppercase font-mono-custom">Modifier Combination (ctrl+a)</label>
+                        <input type="text" value="${step.combo || ''}" onchange="updateStepFieldValue(${idx}, 'combo', this.value)" class="w-full text-xs font-mono-custom px-2 py-1 border border-[var(--color-border)] rounded-md bg-[var(--color-surface)] text-[var(--color-text)] focus:outline-none">
+                    `;
+                    body.appendChild(div);
+                }
+                else if (step.action === 'execute_script') {
+                    const div = document.createElement('div');
+                    div.className = "space-y-1 col-span-1 sm:col-span-2";
+                    div.innerHTML = `
+                        <label class="block text-[9px] font-bold text-[var(--color-text-muted)] uppercase font-mono-custom">JavaScript Code</label>
+                        <textarea rows="2" onchange="updateStepFieldValue(${idx}, 'text', this.value)" class="w-full text-xs font-mono-custom p-2 border border-[var(--color-border)] rounded-md bg-[var(--color-surface)] text-[var(--color-text)] focus:outline-none">${step.text || ''}</textarea>
+                    `;
+                    body.appendChild(div);
+                }
+
+                card.appendChild(body);
+                area.appendChild(card);
+            });
+        }
+
+        function addStepToActiveSkill() {
+            const skill = getActiveSkillObject();
+            if (!skill) return;
+
+            skill.steps.push({
+                action: "click",
+                selector: "button.submit"
+            });
+
+            saveSkillsToStorage();
+            renderActiveSkillSteps();
+        }
+
+        function deleteSkillStep(idx) {
+            const skill = getActiveSkillObject();
+            if (!skill) return;
+
+            skill.steps.splice(idx, 1);
+            saveSkillsToStorage();
+            renderActiveSkillSteps();
+        }
+
+        function moveSkillStep(idx, direction) {
+            const skill = getActiveSkillObject();
+            if (!skill) return;
+
+            const targetIdx = idx + direction;
+            if (targetIdx < 0 || targetIdx >= skill.steps.length) return;
+
+            const temp = skill.steps[idx];
+            skill.steps[idx] = skill.steps[targetIdx];
+            skill.steps[targetIdx] = temp;
+
+            saveSkillsToStorage();
+            renderActiveSkillSteps();
+        }
+
+        function updateStepFieldValue(stepIdx, field, val) {
+            const skill = getActiveSkillObject();
+            if (!skill) return;
+
+            skill.steps[stepIdx][field] = val;
+            
+            if (field === 'action') {
+                const step = skill.steps[stepIdx];
+                if (val !== 'navigate') delete step.url;
+                if (val !== 'click' && val !== 'input') delete step.selector;
+                if (val !== 'input' && val !== 'type_text' && val !== 'execute_script') delete step.text;
+                if (val !== 'key_press') delete step.key;
+                if (val !== 'key_combo') delete step.combo;
+            }
+
+            saveSkillsToStorage();
+            renderActiveSkillSteps();
+        }
+
+        function renameActiveSkill() {
+            const skill = getActiveSkillObject();
+            if (!skill) return;
+
+            const oldName = skill.name;
+            const newName = prompt(`Enter a new name for skill "${oldName}":`, oldName);
+            if (!newName || !newName.trim() || newName.trim() === oldName) return;
+
+            const safeKey = newName.trim();
+            if (skills[safeKey]) {
+                alert("A skill with that name already exists in memory.");
+                return;
+            }
+
+            skills[safeKey] = skills[oldName];
+            skills[safeKey].name = safeKey;
+            delete skills[oldName];
+
+            saveSkillsToStorage();
+            rebuildSkillSelectorsAndPools();
+            document.getElementById('skillSelector').value = skill.id;
+            onActiveSkillChanged();
+            triggerToastNotification("Renamed Skill", `"${oldName}" renamed to "${safeKey}"`, true);
+        }
+
+        function deleteActiveSkill() {
+            const skill = getActiveSkillObject();
+            if (!skill) return;
+
+            if (!confirm(`Are you absolutely sure you want to delete "${skill.name}"? This cannot be undone.`)) return;
+
+            delete skills[skill.name];
+            saveSkillsToStorage();
+            rebuildSkillSelectorsAndPools();
+            document.getElementById('skillSelector').value = "";
+            onActiveSkillChanged();
+            triggerToastNotification("Deleted Skill", "The selected skill was deleted.", true);
+        }
+
+        function queueSkillForConsecutiveRun(skillId) {
+            const skill = Object.values(skills).find(s => s.id === skillId);
+            if (!skill) return;
+
+            selectedSkillsForChain.push(skillId);
+            rebuildChainSequenceView();
+            triggerToastNotification("Queued Skill", `"${skill.name}" added to run sequence.`, true);
+        }
+
+        function rebuildChainSequenceView() {
+            const area = document.getElementById('activeChainSequence');
+            area.innerHTML = '';
+
+            if (selectedSkillsForChain.length === 0) {
+                area.innerHTML = '<span class="text-[10px] text-[var(--color-text-muted)] italic font-mono-custom">Queue is empty. Select skills from the pool.</span>';
+                return;
+            }
+
+            selectedSkillsForChain.forEach((skillId, idx) => {
+                const skill = Object.values(skills).find(s => s.id === skillId);
+                if (!skill) return;
+
+                const node = document.createElement('div');
+                node.className = "flex items-center space-x-1.5 bg-[var(--color-primary-glow)] border border-[var(--color-primary)]/30 text-[10px] font-mono-custom text-[var(--color-text)] px-2.5 py-1 rounded-md transition-all animate-fade-in";
+                node.innerHTML = `
+                    <span class="text-[var(--color-primary)] font-bold">#${idx + 1}</span>
+                    <span class="font-bold max-w-[120px] truncate">${skill.name}</span>
+                    <button onclick="removeSkillFromChain(${idx})" class="text-rose-400 hover:text-rose-500 font-bold ml-1">✕</button>
+                `;
+                area.appendChild(node);
+            });
+        }
+
+        function removeSkillFromChain(idx) {
+            selectedSkillsForChain.splice(idx, 1);
+            rebuildChainSequenceView();
+        }
+
+        function clearConsecutiveQueue() {
+            selectedSkillsForChain = [];
+            rebuildChainSequenceView();
+        }
+
+        function toggleInfiniteLoopSetting() {
+            const infiniteCheck = document.getElementById('chainLoopInfinite');
+            const numInput = document.getElementById('chainLoopCount');
+
+            if (infiniteCheck.checked) {
+                numInput.disabled = true;
+                numInput.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                numInput.disabled = false;
+                numInput.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        async function executeSkillChainSequence() {
+            if (selectedSkillsForChain.length === 0) {
+                triggerToastNotification("Chain Empty", "Please select at least one skill macro to execute.", false);
+                return;
+            }
+
+            const infiniteCheck = document.getElementById('chainLoopInfinite').checked;
+            const targetLoopLimit = parseInt(document.getElementById('chainLoopCount').value, 10) || 1;
+
+            chainRunning = true;
+            document.getElementById('btnRunSkillChain').innerText = "STOPPING...";
+            document.getElementById('btnRunSkillChain').onclick = () => stopActiveSkillChainSequence();
+            document.getElementById('btnRunSkillChain').className = "w-full bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs py-2 px-4 rounded-lg transition-colors shadow-md font-mono-custom uppercase";
+
+            logConsoleEvent('CHAIN_RUNNER', `Booting Sequential Automation Chain with ${selectedSkillsForChain.length} skill loops...`, 'success');
+
+            let loopsRemaining = infiniteCheck ? Infinity : targetLoopLimit;
+            let currentLoopIdx = 1;
+
+            while (chainRunning && loopsRemaining > 0) {
+                logConsoleEvent('CHAIN_RUNNER', `\n==== Processing Automation Loop Sequence Iteration: ${currentLoopIdx} ====`, 'success');
+                
+                for (let stepIdx = 0; stepIdx < selectedSkillsForChain.length; stepIdx++) {
+                    if (!chainRunning) break;
+
+                    const skillId = selectedSkillsForChain[stepIdx];
+                    const skill = Object.values(skills).find(s => s.id === skillId);
+                    if (!skill) continue;
+
+                    logConsoleEvent('CHAIN_RUNNER', `[EXECUTE] Running queued skill target #${stepIdx + 1}: "${skill.name}" with ${skill.steps.length} nested macro actions...`, 'info');
+
+                    for (let stepOfSkillIdx = 0; stepOfSkillIdx < skill.steps.length; stepOfSkillIdx++) {
+                        if (!chainRunning) break;
+
+                        const stepObj = skill.steps[stepOfSkillIdx];
+                        logConsoleEvent('CHAIN_RUNNER', `Executing sequence step #${stepOfSkillIdx + 1}: [${stepObj.action.toUpperCase()}]`, 'info');
+
+                        await executePlannedAgentAction(stepObj);
+
+                        const configuredDelay = parseInt(document.getElementById('agentActionDelay').value, 10) || 1500;
+                        await sleep(configuredDelay);
+                    }
+                }
+
+                currentLoopIdx++;
+                if (!infiniteCheck) loopsRemaining--;
+            }
+
+            stopActiveSkillChainSequence();
+        }
+
+        function stopActiveSkillChainSequence() {
+            chainRunning = false;
+            document.getElementById('btnRunSkillChain').innerText = "Run Skill Chain";
+            document.getElementById('btnRunSkillChain').onclick = () => executeSkillChainSequence();
+            document.getElementById('btnRunSkillChain').className = "w-full bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs py-2 px-4 rounded-lg transition-colors shadow-md font-mono-custom uppercase";
+
+            logConsoleEvent('CHAIN_RUNNER', 'Skill sequence loop execution completed/stopped.', 'warn');
+        }
+
+        // Prior Loop Memory Logic
+        function loadPriorLoopsFromStorage() {
+            try {
+                const localData = localStorage.getItem('zenspace_prior_loops');
+                if (localData) {
+                    priorLoops = JSON.parse(localData);
+                }
+            } catch (err) {
+                console.error("Failed to parse local loops history:", err);
+            }
+        }
+
+        function saveLoopToHistory(loopSteps) {
+            if (!loopSteps || loopSteps.length === 0) return;
+            priorLoops.push(JSON.parse(JSON.stringify(loopSteps)));
+            if (priorLoops.length > 2) {
+                priorLoops.shift();
+            }
+            localStorage.setItem('zenspace_prior_loops', JSON.stringify(priorLoops));
+            renderPriorLoopsUI();
+        }
+
+        function renderPriorLoopsUI() {
+            const container = document.getElementById('priorLoopsContainer');
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            if (priorLoops.length === 0) {
+                container.innerHTML = `<div class="text-[10px] text-[var(--color-text-faint)] italic font-mono-custom col-span-2 py-2">No completed loops in history memory yet.</div>`;
+                return;
+            }
+
+            priorLoops.forEach((loopSteps, idx) => {
+                const row = document.createElement('div');
+                row.className = "p-2.5 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg flex items-center justify-between gap-3 text-xs";
+                row.innerHTML = `
+                    <div class="space-y-0.5 truncate flex-grow">
+                        <span class="font-bold font-mono-custom text-[var(--color-text)]">Prior Loop Run #${idx + 1}</span>
+                        <p class="text-[10px] text-[var(--color-text-muted)] font-mono-custom">${loopSteps.length} action steps captured</p>
+                    </div>
+                    <div class="flex gap-1.5 shrink-0">
+                        <button onclick="restorePriorLoopAsSkill(${idx})" class="text-[9px] bg-[var(--color-primary-glow)] hover:bg-[var(--color-primary)] text-[var(--color-primary)] hover:text-[var(--color-bg)] font-bold px-2 py-1 rounded transition-colors uppercase font-mono-custom">Restore</button>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function restorePriorLoopAsSkill(idx) {
+            if (idx < 0 || idx >= priorLoops.length) return;
+            offerLoopExport(priorLoops[idx]);
+        }
+
+        function clearPriorLoopsHistory() {
+            priorLoops = [];
+            localStorage.removeItem('zenspace_prior_loops');
+            renderPriorLoopsUI();
+            triggerToastNotification("History Cleared", "Prior loops history memory cleared successfully.");
+        }
+
+        // Loop Export Offer Subsystem
+        function offerLoopExport(steps) {
+            if (!steps || steps.length === 0) return;
+            pendingExportSteps = JSON.parse(JSON.stringify(steps));
+            
+            const banner = document.getElementById('offerExportBanner');
+            const stepCountSpan = document.getElementById('offerStepCount');
+            if (banner && stepCountSpan) {
+                stepCountSpan.innerText = pendingExportSteps.length;
+                banner.classList.remove('hidden');
+                banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function dismissExportOffer() {
+            const banner = document.getElementById('offerExportBanner');
+            if (banner) banner.classList.add('hidden');
+            pendingExportSteps = [];
+        }
+
+        function exportOfferAsSkill() {
+            if (pendingExportSteps.length === 0) return;
+            const skillName = prompt("Enter a name for this new Skill macro:", "Autopilot Saved Skill");
+            if (!skillName || !skillName.trim()) return;
+
+            const safeKey = skillName.trim();
+            const id = 'skill_' + Date.now();
+
+            if (skills[safeKey]) {
+                alert("A skill with that name already exists.");
+                return;
+            }
+
+            skills[safeKey] = {
+                id: id,
+                name: safeKey,
+                steps: pendingExportSteps
+            };
+
+            saveSkillsToStorage();
+            rebuildSkillSelectorsAndPools();
+            document.getElementById('skillSelector').value = id;
+            onActiveSkillChanged();
+            
+            triggerToastNotification("Skill Saved", `"${safeKey}" added to your Skill Studio.`, true);
+            dismissExportOffer();
+        }
+
+        function downloadOfferAsJSON() {
+            if (pendingExportSteps.length === 0) return;
+            const skillName = "autopilot_export_" + Date.now();
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({
+                name: "Autopilot Exported Skill",
+                steps: pendingExportSteps
+            }, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `${skillName}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            triggerToastNotification("JSON Exported", "Skill file downloaded successfully.", true);
+            dismissExportOffer();
+        }
+
+        function executeCoordinatesClick() {
+            const clickXEl = document.getElementById('clickX');
+            const clickYEl = document.getElementById('clickY');
+            const x = parseInt(clickXEl ? clickXEl.value : "100", 10);
+            const y = parseInt(clickYEl ? clickYEl.value : "150", 10);
+
+            if (!isConnected || !currentTabId) {
+                logConsoleEvent('DRIVER', `Harness Offline: Simulating click coordinates on canvas viewport [X=${x}, Y=${y}]`);
+                updateScreenshotPreviewUI(buildFallbackVisualState());
+                return;
+            }
+
+            logConsoleEvent('DRIVER', `Dispatching physical absolute CDP mouse clicks: [X=${x}, Y=${y}]`);
+
+            callExtension({ action: 'click_coords', tabId: currentTabId, x: x, y: y }, (response) => {
+                if (response && response.status === 'ok') {
+                    logConsoleEvent('DRIVER', `Coordinate click executed. Hit TagName: <${response.result?.tagName || 'undefined'}>`, 'success');
+                } else {
+                    logConsoleEvent('DRIVER', `CDP Coordinate dispatcher error: ${response?.error || 'Debugging layer issue'}`, 'error');
+                }
+            });
+        }
+
+        function captureActiveTabScreenshot() {
+            return new Promise((resolve) => {
+                if (!isConnected || !currentTabId) {
+                    const fallbackData = buildFallbackVisualState();
+                    updateScreenshotPreviewUI(fallbackData);
+                    resolve(fallbackData);
+                    return;
+                }
+
+                logConsoleEvent('SCREENSHOT', `Requesting CAPTURE_SCREENSHOT on Tab #${currentTabId}`);
+                
+                callExtension({ action: 'capture_screenshot', tabId: currentTabId }, (response) => {
+                    if (response && response.status === 'ok' && response.dataUrl) {
+                        logConsoleEvent('SCREENSHOT', 'Screenshot captured successfully.', 'success');
+                        updateScreenshotPreviewUI(response.dataUrl);
+                        resolve(response.dataUrl);
+                    } else {
+                        logConsoleEvent('SCREENSHOT', `Viewport capture failed: ${response?.error || 'Browser limit'}. Using sandbox fallback.`, 'warn');
+                        const fallbackData = buildFallbackVisualState();
+                        updateScreenshotPreviewUI(fallbackData);
+                        resolve(fallbackData);
+                    }
+                });
+            });
+        }
+
+        function updateScreenshotPreviewUI(dataUrl) {
+            latestScreenshotBase64 = dataUrl;
+            
+            const placeholder = document.getElementById('noScreenshotPlaceholder');
+            const img = document.getElementById('agentScreenshotImg');
+            const statusLabel = document.getElementById('visualVerificationStatus');
+
+            placeholder.classList.add('hidden');
+            img.classList.remove('hidden');
+            img.src = dataUrl;
+            
+            statusLabel.innerText = "SNAPSHOT RECEIVED";
+            statusLabel.className = "text-[10px] font-mono-custom text-emerald-400 font-bold uppercase";
+        }
+
+        function buildFallbackVisualState() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 640;
+            canvas.height = 360;
+            const ctx = canvas.getContext('2d');
+            
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            ctx.fillStyle = isDark ? '#0f172a' : '#f8fafc';
+            ctx.fillRect(0, 0, 640, 360);
+            
+            ctx.fillStyle = isDark ? '#1e293b' : '#e2e8f0';
+            ctx.fillRect(0, 0, 640, 48);
+            
+            ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(20, 24, 6, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#eab308'; ctx.beginPath(); ctx.arc(38, 24, 6, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#22c55e'; ctx.beginPath(); ctx.arc(56, 24, 6, 0, Math.PI * 2); ctx.fill();
+            
+            ctx.fillStyle = isDark ? '#334155' : '#cbd5e1';
+            ctx.fillRect(85, 12, 430, 24);
+            
+            ctx.fillStyle = isDark ? '#94a3b8' : '#475569';
+            ctx.font = '10px monospace';
+            const urlIn = 'https://news.ycombinator.com';
+            ctx.fillText(urlIn, 98, 28);
+
+            ctx.fillStyle = isDark ? '#1e293b' : '#f1f5f9';
+            ctx.fillRect(25, 75, 590, 255);
+
+            ctx.fillStyle = '#3ecfcf';
+            ctx.fillRect(55, 115, 130, 28);
+            ctx.fillStyle = '#0d0f12';
+            ctx.font = 'bold 10px sans-serif';
+            ctx.fillText('AUTOPILOT RUNNING', 70, 132);
+
+            ctx.fillStyle = isDark ? '#334155' : '#cbd5e1';
+            ctx.fillRect(210, 115, 370, 28);
+            ctx.fillStyle = isDark ? '#e2e8f0' : '#1e293b';
+            ctx.fillText('Sample Simulated Sandbox Viewport Page Content...', 225, 132);
+
+            return canvas.toDataURL('image/jpeg');
+        }
+
+        function executeCustomCodeInTab() {
+            const box = document.getElementById('scriptPayload');
+            if (!box) {
+                logConsoleEvent('SANDBOX', 'Error: Custom script sandbox box is missing.', 'error');
+                return;
+            }
+            const code = box.value.trim();
+            if (!code) return;
+
+            if (!isConnected || !currentTabId) {
+                triggerToastNotification('Error', 'Secure communication link required.', false);
+                return;
+            }
+
+            logConsoleEvent('SANDBOX', `Injecting sandbox execution logic inside tab #${currentTabId}...`);
+
+            callExtension({ action: 'execute_script', tabId: currentTabId, script: code }, (response) => {
+                if (response && response.status === 'ok') {
+                    logConsoleEvent('SANDBOX_RETURN', `Result payload evaluated: ${JSON.stringify(response.result)}`, 'success');
+                } else {
+                    logConsoleEvent('SANDBOX_ERROR', `Execution trace error: ${response?.error || 'CSP restrictions context'}`, 'error');
+                }
+            });
+        }
+
+        function setScriptShortcut(type) {
+            const box = document.getElementById('scriptPayload');
+            if (!box) return;
+            if (type === 'metadata') {
+                box.value = "return {\n  title: document.title,\n  url: window.location.href,\n  viewport: { w: window.innerWidth, h: window.innerHeight },\n  cookies: document.cookie\n};";
+            } else if (type === 'forms') {
+                box.value = "return Array.from(document.querySelectorAll('input, select, textarea')).map(el => ({\n  id: el.id,\n  name: el.name,\n  tagName: el.tagName,\n  type: el.type,\n  value: el.value\n}));";
+            }
+        }
+
+        function refreshActiveTabDOMState() {
+            if (!isConnected || !currentTabId) {
+                document.getElementById('domScrapedArea').innerHTML = `
+                    <div class="text-center py-12 text-rose-400 text-xs font-semibold font-mono-custom">
+                        ⚠️ Handshake offline. Connect to active helper extension to view page tree structures.
+                    </div>`;
+                return;
+            }
+
+            logConsoleEvent('SCRAPER', 'Crawling target viewport document tree nodes...');
+            document.getElementById('domScrapedArea').innerHTML = `
+                <div class="flex flex-col items-center justify-center py-12 space-y-2.5">
+                    <span class="w-6 h-6 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin"></span>
+                    <span class="text-xs text-[var(--color-text-muted)] font-mono-custom">Walking tab DOM nodes...</span>
+                </div>`;
+
+            callExtension({ action: 'get_dom_state', tabId: currentTabId }, (response) => {
+                if (response && response.status === 'ok' && response.domState) {
+                    const dom = response.domState;
+                    logConsoleEvent('SCRAPER', `Interactive DOM parsed. Web Title: "${dom.title}" | Nodes captured: ${dom.elements.length}`, 'success');
+                    renderDOMStructureList(dom.elements);
+                } else {
+                    document.getElementById('domScrapedArea').innerHTML = `
+                        <div class="text-center py-12 text-[var(--color-text-muted)] text-xs italic font-mono-custom">
+                            Parsing returned empty map. Verify tab page context has finished loading.
+                        </div>`;
+                }
+            });
+        }
+
+        function renderDOMStructureList(elements) {
+            const container = document.getElementById('domScrapedArea');
+            container.innerHTML = '';
+
+            if (elements.length === 0) {
+                container.innerHTML = '<div class="text-center py-12 text-[var(--color-text-muted)] italic font-mono-custom">No visible interactive elements located on page viewport.</div>';
+                return;
+            }
+
+            elements.forEach(node => {
+                const elementRow = document.createElement('div');
+                elementRow.className = "bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-offset)] p-3 rounded-lg border border-[var(--color-border)] flex flex-col md:flex-row justify-between items-start md:items-center gap-2.5 cursor-pointer transition-colors";
+                
+                elementRow.onclick = () => {
+                    triggerToastNotification('Target Loaded', `Selected element path: "${node.selector}"`);
+                    const fallbackData = buildFallbackVisualState();
+                    updateScreenshotPreviewUI(fallbackData);
+                };
+
+                const cleanTag = node.tag ? node.tag.toLowerCase() : 'element';
+                const cleanType = node.type ? `type="${node.type}"` : '';
+                const cleanId = node.id ? `#${node.id}` : '';
+                const cleanText = node.text ? `"${node.text}"` : '<span class="text-[var(--color-text-faint)] text-[10px]">&lt;empty inline descriptor&gt;</span>';
+
+                elementRow.innerHTML = `
+                    <div class="space-y-1 w-full md:w-3/4">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-[9px] font-bold font-mono-custom tracking-widest uppercase bg-[var(--color-primary-glow)] border border-[var(--color-primary)]/20 px-2 py-0.5 rounded text-[var(--color-primary)]">
+                                ${cleanTag}
+                            </span>
+                            ${cleanType ? `<span class="text-[9px] font-mono-custom text-[var(--color-text-muted)]">${cleanType}</span>` : ''}
+                            ${cleanId ? `<span class="text-[9px] font-mono-custom text-[var(--color-primary)] font-bold">${cleanId}</span>` : ''}
+                        </div>
+                        <div class="text-xs text-[var(--color-text)] font-semibold italic line-clamp-1 font-mono-custom">
+                            ${cleanText}
+                        </div>
+                        <div class="text-[10px] font-mono-custom text-[var(--color-text-muted)] truncate">
+                            ${node.selector}
+                        </div>
+                    </div>
+                    <div class="text-right flex md:flex-col items-center md:items-end justify-between w-full md:w-1/4 shrink-0 border-t md:border-0 pt-2 md:pt-0 border-[var(--color-divider)]">
+                        <span class="text-[10px] font-mono-custom text-[var(--color-text-muted)] bg-[var(--color-surface-offset)] border border-[var(--color-border)] px-1.5 py-0.5 rounded">
+                            X: ${node.rect.x} | Y: ${node.rect.y}
+                        </span>
+                        <span class="text-[9px] text-[var(--color-text-faint)] font-mono-custom mt-0.5">
+                            dim: ${node.rect.w}x${node.rect.h}
+                        </span>
+                    </div>
+                `;
+                container.appendChild(elementRow);
+            });
+        }
+
+        function switchRightPaneTab(target) {
+            const tabsList = ['logs', 'dom', 'autopilot'];
+            tabsList.forEach(tab => {
+                const btn = document.getElementById(`tabBtn${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+                const panel = document.getElementById(`panel${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+                if (tab === target) {
+                    btn.className = "border-b-2 border-brand-500 px-4 py-2.5 font-bold text-[var(--color-primary)] focus:outline-none transition-all";
+                    panel.classList.remove('hidden');
+                } else {
+                    btn.className = "border-b-2 border-transparent px-4 py-2.5 font-bold text-[var(--color-text-muted)] hover:text-[var(--color-text)] focus:outline-none transition-all";
+                    panel.classList.add('hidden');
+                }
+            });
+        }
+
+        function setSubsystemActiveIndicator(activeSubsystem) {
+            const subsystems = ['auditor', 'solver', 'architect', 'driver', 'reviewer'];
+            subsystems.forEach(sys => {
+                const badge = document.getElementById(`subsystem-${sys}`);
+                if (sys === activeSubsystem) {
+                    badge.className = "p-2 rounded-lg bg-[var(--color-primary-glow)] text-[var(--color-primary)] border border-[var(--color-primary)] shadow-lg animate-pulse transition-all";
+                } else {
+                    badge.className = "p-2 rounded-lg bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-border)] transition-all";
+                }
+            });
+        }
+
+        function initiateRealAgentRuntime(mode = 'continuous') {
+            const apiKey = document.getElementById('geminiApiKey').value.trim();
+            const goal = document.getElementById('agentGoal').value.trim();
+
+            if (!goal) {
+                triggerToastNotification('Configuration Required', 'Please supply a goal directive before starting.', false);
+                return;
+            }
+
+            if (apiKey) {
+                localStorage.setItem('zenspace_gemini_key', apiKey);
+            }
+
+            agentActive = true;
+            currentAutopilotSessionSteps = [];
+            updateAutopilotSessionCounter();
+            dismissExportOffer();
+
+            document.getElementById('btnStartAgent').disabled = true;
+            document.getElementById('btnStartAgent').classList.add('opacity-50', 'cursor-not-allowed');
+            document.getElementById('btnStopAgent').disabled = false;
+            document.getElementById('btnStopAgent').className = "bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs py-2.5 px-3 rounded-lg shadow-md transition-colors flex items-center justify-center space-x-1.5 font-mono-custom uppercase";
+
+            document.getElementById('agentStepStatus').className = "font-mono-custom text-emerald-400 font-bold uppercase animate-pulse";
+            document.getElementById('agentStepStatus').innerText = "AUTOPILOT RUNNING";
+            document.getElementById('aiDiagnosticsBox').className = "text-emerald-400 font-mono-custom space-y-1";
+            document.getElementById('aiDiagnosticsBox').innerText = "Initiating closed-loop autopilot thread...";
+
+            logConsoleEvent('AUTOPILOT', `Bootstrapping master Autopilot system. Directive: "${goal}"`, 'success');
+
+            let runCount = 1;
+            executeAutonomousAgentStep(runCount, goal, apiKey);
+        }
+
+        async function executeAutonomousAgentStep(step, goal, apiKey) {
+            if (!agentActive) return;
+
+            logConsoleEvent('AUTOPILOT', `\n=== Autopilot Iteration Step #${step} ===`);
+            
+            setSubsystemActiveIndicator('auditor');
+            document.getElementById('agentStepStatus').innerText = `STEP ${step}: VISUAL RECON`;
+            document.getElementById('aiDiagnosticsBox').innerText = `Auditing page visuals and accessibility layouts...`;
+            
+            const currentScreenshot = await captureActiveTabScreenshot();
+            
+            setSubsystemActiveIndicator('solver');
+            document.getElementById('agentStepStatus').innerText = `STEP ${step}: STRUCTURAL SEARCH`;
+            document.getElementById('aiDiagnosticsBox').innerText = `Extracting active interactive node arrays...`;
+
+            let domMap = await getActiveTabDOMStateAsync();
+            if (!domMap) {
+                logConsoleEvent('AUTOPILOT', 'Warning: Extension link missing. Simulating workspace elements...', 'warn');
+                domMap = {
+                    title: "I am canceled Sandbox Page Workspace",
+                    url: "https://news.ycombinator.com",
+                    elements: [
+                        { tag: "button", text: "Submit Post", selector: "button.submit-post", rect: { x: 250, y: 180, w: 100, h: 30 } },
+                        { tag: "input", text: "", selector: "input[name='search']", type: "text", rect: { x: 120, y: 80, w: 200, h: 25 } }
+                    ]
+                };
+            }
+
+            setSubsystemActiveIndicator('reviewer');
+            document.getElementById('agentStepStatus').innerText = `STEP ${step}: COGNITIVE THINKING`;
+            document.getElementById('aiDiagnosticsBox').innerText = `Processing prompt parameters through Gemini models...`;
+
+            let decisionObj;
+            try {
+                const keyToUse = apiKey || "";
+                decisionObj = await queryUnifiedAutopilotGeminiAPI(keyToUse, goal, domMap, currentScreenshot, step);
+            } catch (err) {
+                logConsoleEvent('AUTOPILOT', `Gemini API query rejected: ${err.message}. Checking window.ai Nano fallback...`, 'warn');
+                try {
+                    decisionObj = await queryLocalWindowAI(goal, domMap, step);
+                    logConsoleEvent('AUTOPILOT', 'Local window.ai Nano session successfully mapped action!', 'success');
+                } catch (fallbackErr) {
+                    logConsoleEvent('AUTOPILOT', `Critical Automation Error: ${fallbackErr.message}`, 'error');
+                    document.getElementById('aiDiagnosticsBox').innerText = `Autopilot aborted: ${fallbackErr.message}`;
+                    terminateRealAgentRuntime();
+                    return;
+                }
+            }
+
+            logConsoleEvent('AUTOPILOT_MIND', `Visual Review: "${decisionObj.reasoning}"`, 'success');
+
+            if (decisionObj.action !== 'done') {
+                currentAutopilotSessionSteps.push({
+                    action: decisionObj.action,
+                    selector: decisionObj.selector || undefined,
+                    url: decisionObj.url || undefined,
+                    text: decisionObj.text || undefined,
+                    key: decisionObj.key || undefined,
+                    combo: decisionObj.combo || undefined
+                });
+                updateAutopilotSessionCounter();
+            }
+
+            if (decisionObj.action === 'execute_script' && decisionObj.text) {
+                setSubsystemActiveIndicator('architect');
+                document.getElementById('agentStepStatus').innerText = `STEP ${step}: COMPILING CODE`;
+                document.getElementById('aiDiagnosticsBox').innerText = `Writing and compiling custom page logic payloads...`;
+                document.getElementById('scriptPayload').value = decisionObj.text;
+                logConsoleEvent('AUTOPILOT_ARCHITECT', `Architect script compiled:\n"${decisionObj.text}"`, 'info');
+            }
+
+            if (!agentActive) return;
+
+            setSubsystemActiveIndicator('driver');
+            document.getElementById('agentStepStatus').innerText = `STEP ${step}: EMITTING EVENTS`;
+            document.getElementById('aiDiagnosticsBox').innerText = `Sending target operation [${decisionObj.action.toUpperCase()}] to bridge...`;
+            
+            await executePlannedAgentAction(decisionObj);
+
+            if (decisionObj.action === 'done') {
+                logConsoleEvent('AUTOPILOT', '🏁 Target mission goals achieved! Loop terminated successfully.', 'success');
+                document.getElementById('aiDiagnosticsBox').innerText = `Mission complete: ${decisionObj.reasoning}`;
+                
+                // Save and offer loop export
+                saveLoopToHistory(currentAutopilotSessionSteps);
+                offerLoopExport(currentAutopilotSessionSteps);
+                
+                terminateRealAgentRuntime();
+                return;
+            }
+
+            const configuredDelay = parseInt(document.getElementById('agentActionDelay').value, 10) || 1500;
+            logConsoleEvent('AUTOPILOT', `Operational action sent. Waiting for configurable delay buffer (${configuredDelay}ms) before starting verifier cycle...`);
+            
+            setSubsystemActiveIndicator('reviewer');
+            document.getElementById('agentStepStatus').innerText = `STEP ${step}: COOLDOWN`;
+            document.getElementById('aiDiagnosticsBox').innerText = `Awaiting target tab render stabilization (${configuredDelay}ms)...`;
+            
+            await sleep(configuredDelay);
+
+            if (agentActive) {
+                executeAutonomousAgentStep(step + 1, goal, apiKey);
+            }
+        }
+
+        async function queryUnifiedAutopilotGeminiAPI(apiKey, goal, domMap, dataUrl, step) {
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            
+            const minifiedNodes = domMap.elements.map(el => ({
+                tag: el.tag,
+                text: el.text,
+                selector: el.selector,
+                type: el.type,
+                id: el.id
+            })).slice(0, 80);
+
+            const base64Data = dataUrl.replace(/^data:image\/(png|jpeg|webp);base64,/, "");
+
+            const prompt = `
+You are the master autopilot controller of "I am canceled".
+Objective task: "${goal}"
+Active context document URL: "${domMap.url}"
+Active context tab title: "${domMap.title}"
+Current step counter index: ${step}
+
+Interactive node coordinates and readable text currently extracted from page:
+${JSON.stringify(minifiedNodes, null, 2)}
+
+INSTRUCTIONS:
+1. Review the attached visual screenshot of the current page layout.
+2. Determine if the previous action was successfully executed by checking for visual changes. If there was an error or no change, select a corrective action.
+3. Output the single next logical action based on your visual verification.
+Supported action formats:
+- "navigate": Route window context to another URL page. Requires "url" property.
+- "click": Dispatch mouse click trigger event. Requires "selector".
+- "input": Replace matching element text value. Requires "selector" and "text".
+- "type_text": Simulate typing character strokes sequentially. Requires "text" (and optional "selector").
+- "key_press": Send single keyboard keystroke trigger. Requires "key" (e.g. "Enter", "Tab", "Escape").
+- "key_combo": Dispatch keyboard combination. Requires "combo" (e.g. "ctrl+a", "ctrl+c").
+- "execute_script": Compile and execute a custom JavaScript payload inside the tab context. Requires "text" code body.
+- "done": Task goals successfully met.
+
+You MUST respond with a valid JSON format fitting this exact schema:
+{
+  "action": "click" | "input" | "type_text" | "key_press" | "key_combo" | "execute_script" | "navigate" | "done",
+  "selector": "CSS Selector string or null",
+  "text": "Text value string or JavaScript code body or null",
+  "key": "Key name string or null",
+  "combo": "Key modifier combination or null",
+  "url": "Destination URL context or null",
+  "reasoning": "Explain your visual analysis of the screen capture, verifying if the last action succeeded and why this next step was chosen"
+}
+`;
+
+            const requestBody = {
+                contents: [{
+                    parts: [
+                        { text: prompt },
+                        {
+                            inlineData: {
+                                mimeType: "image/jpeg",
+                                data: base64Data
+                            }
+                        }
+                    ]
+                }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            action: { type: "STRING", enum: ["click", "input", "type_text", "key_press", "key_combo", "execute_script", "navigate", "done"] },
+                            selector: { type: "STRING", nullable: true },
+                            text: { type: "STRING", nullable: true },
+                            key: { type: "STRING", nullable: true },
+                            combo: { type: "STRING", nullable: true },
+                            url: { type: "STRING", nullable: true },
+                            reasoning: { type: "STRING" }
+                        },
+                        required: ["action", "reasoning"]
+                    }
+                }
+            };
+
+            const response = await fetchWithBackoff(endpoint, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(requestBody)
+            });
+
+            const resData = await response.json();
+            const textResponse = resData.candidates[0].content.parts[0].text;
+            return JSON.parse(textResponse);
+        }
+
+        async function fetchWithBackoff(url, options, maxRetries = 3) {
+            let delay = 1000;
+            for (let attempt = 0; attempt <= maxRetries; attempt++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (response.ok) {
+                        return response;
+                    }
+                    if (response.status === 429 || response.status >= 500) {
+                        if (attempt === maxRetries) {
+                            throw new Error(`API returned status ${response.status} after ${maxRetries} retries.`);
+                        }
+                        logConsoleEvent('AUTOPILOT', `Rate limit / server load encountered (status ${response.status}). Retrying in ${delay}ms...`, 'warn');
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        delay *= 2;
+                        continue;
+                    }
+                    const errData = await response.json().catch(() => ({}));
+                    throw new Error(errData.error?.message || `API returned status ${response.status}`);
+                } catch (err) {
+                    if (attempt === maxRetries) {
+                        throw err;
+                    }
+                    logConsoleEvent('AUTOPILOT', `Network/API connection issue: ${err.message}. Retrying in ${delay}ms...`, 'warn');
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    delay *= 2;
+                }
+            }
+        }
+
+        async function queryLocalWindowAI(goal, domMap, step) {
+            let session;
+            if (typeof window.ai !== 'undefined' && window.ai.languageModel) {
+                session = await window.ai.languageModel.create();
+            } else if (typeof window.ai !== 'undefined' && window.ai.createTextSession) {
+                session = await window.ai.createTextSession();
+            } else {
+                throw new Error("window.ai local Gemini Nano API is not supported in this browser context.");
+            }
+
+            const minifiedNodes = domMap.elements.map(el => ({
+                tag: el.tag,
+                text: el.text,
+                selector: el.selector,
+                type: el.type,
+                id: el.id
+            })).slice(0, 80);
+
+            const prompt = `
+You are an advanced browser automation driver running locally via window.ai (Gemini Nano).
+Goal task to achieve: "${goal}"
+Active context tab URL: "${domMap.url}"
+Active context tab title: "${domMap.title}"
+Step count index: ${step}
+
+Interactive elements and text nodes found in the current page DOM:
+${JSON.stringify(minifiedNodes)}
+
+Determine the next logical step and output strictly a valid JSON matching this schema:
+{
+  "action": "click" | "input" | "type_text" | "key_press" | "key_combo" | "navigate" | "done",
+  "selector": "CSS selector or null",
+  "text": "text to type or null",
+  "key": "keyboard key name or null",
+  "combo": "keyboard shortcut combo or null",
+  "url": "navigation target URL or null",
+  "reasoning": "Explain why this action was selected"
+}
+`;
+
+            try {
+                const rawResponse = await session.prompt(prompt);
+                session.destroy();
+
+                let jsonText = rawResponse.trim();
+                const jsonMatch = jsonText.match(/\{[\s\S]*\}/);
+                if (jsonMatch) {
+                    jsonText = jsonMatch[0];
+                }
+                return JSON.parse(jsonText);
+            } catch (err) {
+                if (session && typeof session.destroy === 'function') {
+                    session.destroy();
+                }
+                throw new Error(`Local prompt failed: ${err.message}`);
+            }
+        }
+
+        function executePlannedAgentAction(decisionObj) {
+            return new Promise((resolve) => {
+                if (!isConnected || !currentTabId) {
+                    setTimeout(() => resolve(true), 100);
+                    return;
+                }
+
+                if (decisionObj.action === 'navigate' && decisionObj.url) {
+                    logConsoleEvent('DRIVER_BRIDGE', `Navigating tab context to URL: "${decisionObj.url}"`);
+                    callExtension({ action: 'navigate', tabId: currentTabId, url: decisionObj.url }, () => {
+                        resolve(true);
+                    });
+                } 
+                else if (decisionObj.action === 'click' && decisionObj.selector) {
+                    logConsoleEvent('DRIVER_BRIDGE', `Clicking target selector: "${decisionObj.selector}"`);
+                    callExtension({ action: 'click_selector', tabId: currentTabId, selector: decisionObj.selector }, () => {
+                        resolve(true);
+                    });
+                } 
+                else if (decisionObj.action === 'input' && decisionObj.selector && decisionObj.text) {
+                    logConsoleEvent('DRIVER_BRIDGE', `Updating input context value for [${decisionObj.selector}] to: "${decisionObj.text}"`);
+                    callExtension({ action: 'input_text', tabId: currentTabId, selector: decisionObj.selector, text: decisionObj.text }, () => {
+                        resolve(true);
+                    });
+                }
+                else if (decisionObj.action === 'type_text' && decisionObj.text) {
+                    logConsoleEvent('DRIVER_BRIDGE', `Sequentially typing character keys: "${decisionObj.text}"`);
+                    callExtension({ action: 'type_text', tabId: currentTabId, selector: decisionObj.selector || null, text: decisionObj.text }, () => {
+                        resolve(true);
+                    });
+                }
+                else if (decisionObj.action === 'key_press' && decisionObj.key) {
+                    logConsoleEvent('DRIVER_BRIDGE', `Pressing key stroke: "${decisionObj.key}"`);
+                    callExtension({ action: 'key_press', tabId: currentTabId, key: decisionObj.key }, () => {
+                        resolve(true);
+                    });
+                }
+                else if (decisionObj.action === 'key_combo' && decisionObj.combo) {
+                    logConsoleEvent('DRIVER_BRIDGE', `Pressing shortcut combo: "${decisionObj.combo}"`);
+                    callExtension({ action: 'key_combo', tabId: currentTabId, combo: decisionObj.combo }, () => {
+                        resolve(true);
+                    });
+                }
+                else if (decisionObj.action === 'execute_script' && decisionObj.text) {
+                    logConsoleEvent('DRIVER_BRIDGE', `Injecting sandbox architect script into page context...`);
+                    callExtension({ action: 'execute_script', tabId: currentTabId, script: decisionObj.text }, () => {
+                        resolve(true);
+                    });
+                }
+                else {
+                    resolve(true);
+                }
+            });
+        }
+
+        function getActiveTabDOMStateAsync() {
+            return new Promise((resolve) => {
+                callExtension({ action: 'get_dom_state', tabId: currentTabId }, (response) => {
+                    if (!response || response.status !== 'ok') {
+                        resolve(null);
+                    } else {
+                        resolve(response.domState);
+                    }
+                });
+            });
+        }
+
+        function terminateRealAgentRuntime() {
+            // Save currently recorded loop history even if aborted early
+            if (currentAutopilotSessionSteps.length > 0) {
+                saveLoopToHistory(currentAutopilotSessionSteps);
+                offerLoopExport(currentAutopilotSessionSteps);
+            }
+
+            agentActive = false;
+            document.getElementById('btnStartAgent').disabled = false;
+            document.getElementById('btnStartAgent').classList.remove('opacity-50', 'cursor-not-allowed');
+            document.getElementById('btnStopAgent').disabled = true;
+            document.getElementById('btnStopAgent').className = "bg-[var(--color-surface-offset)] text-[var(--color-text-faint)] border border-[var(--color-border)] font-bold text-xs py-2.5 px-3 rounded-lg cursor-not-allowed transition-colors flex items-center justify-center space-x-1.5 font-mono-custom uppercase";
+            
+            document.getElementById('agentStepStatus').className = "font-mono-custom text-[var(--color-text-muted)] font-bold";
+            document.getElementById('agentStepStatus').innerText = "IDLE";
+            setSubsystemActiveIndicator('none');
+            logConsoleEvent('AUTOPILOT', 'Autopilot operational loops paused.', 'warn');
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function getAPIKeyOrFallback() {
+            return document.getElementById('geminiApiKey').value.trim() || "";
+        }
+
+        async function runAutopilotAuditSubstep() {
+            logConsoleEvent('AUTOPILOT_AUDIT', 'Executing UX Auditor Subsystem analysis...');
+            setSubsystemActiveIndicator('auditor');
+            
+            const apiKey = await getAPIKeyOrFallback();
+            let dataUrl = isConnected && currentTabId ? await captureActiveTabScreenshot() : buildFallbackVisualState();
+            const base64Data = dataUrl.replace(/^data:image\/(png|jpeg|webp);base64,/, "");
+
+            const prompt = `
+You are a world-class Web UX Analyst and Accessibility Auditor.
+Perform a strict design, accessibility, and interactive usability audit using the attached screenshot.
+Identify visual density, elements layout, and accessibility improvement plans.
+`;
+
+            try {
+                const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                const response = await fetchWithBackoff(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [
+                                { text: prompt },
+                                { inlineData: { mimeType: "image/jpeg", data: base64Data } }
+                            ]
+                        }]
+                    })
+                });
+
+                const resData = await response.json();
+                const textResponse = resData.candidates[0].content.parts[0].text;
+                
+                document.getElementById('aiDiagnosticsBox').innerText = textResponse;
+                logConsoleEvent('AUTOPILOT_AUDIT', 'UX Visual analysis audit completed successfully. Check Orchestrator Log.', 'success');
+            } catch (err) {
+                logConsoleEvent('AUTOPILOT_AUDIT', `Subsystem error: ${err.message}`, 'error');
+            }
+        }
+
+        async function runAutopilotSolverSubstep() {
+            logConsoleEvent('AUTOPILOT_SOLVER', 'Executing DOM Solver Subsystem analysis...');
+            setSubsystemActiveIndicator('solver');
+            
+            const apiKey = await getAPIKeyOrFallback();
+            const goal = document.getElementById('agentGoal').value.trim() || "the main interaction point";
+            
+            let domMap = await getActiveTabDOMStateAsync();
+            if (!domMap) domMap = { elements: [] };
+
+            const minifiedNodes = domMap.elements.map(el => ({
+                tag: el.tag,
+                text: el.text,
+                selector: el.selector,
+                type: el.type,
+                id: el.id
+            })).slice(0, 40);
+
+            const prompt = `
+You are an expert browser automation developer. 
+Identify the most accurate CSS selector matching the goal target: "${goal}"
+Current elements list:
+${JSON.stringify(minifiedNodes)}
+
+Output strictly valid JSON:
+{
+  "selector": "the CSS selector path",
+  "reasoning": "short explanation of the DOM match"
+}
+`;
+
+            try {
+                const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                const response = await fetchWithBackoff(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                        generationConfig: {
+                            responseMimeType: "application/json",
+                            responseSchema: {
+                                type: "OBJECT",
+                                properties: {
+                                    selector: { type: "STRING" },
+                                    reasoning: { type: "STRING" }
+                                },
+                                required: ["selector", "reasoning"]
+                            }
+                        }
+                    })
+                });
+
+                const resData = await response.json();
+                const result = JSON.parse(resData.candidates[0].content.parts[0].text);
+                
+                logConsoleEvent('AUTOPILOT_SOLVER', `Solved! Selected Target: "${result.selector}" (${result.reasoning})`, 'success');
+            } catch (err) {
+                logConsoleEvent('AUTOPILOT_SOLVER', `Subsystem error: ${err.message}`, 'error');
+            }
+        }
+
+        async function runAutopilotArchitectSubstep() {
+            logConsoleEvent('AUTOPILOT_ARCHITECT', 'Executing Script Architect Subsystem analysis...');
+            setSubsystemActiveIndicator('architect');
+            
+            const apiKey = await getAPIKeyOrFallback();
+            const goal = document.getElementById('agentGoal').value.trim() || "extract basic information";
+
+            const prompt = `
+You are a senior frontend automation engineer. 
+Write a clean, self-contained Javascript payload function block to execute within a browser tab.
+Requirement goal: "${goal}"
+
+Ensure the script runs safely without CSP issues and returns a JSON serializable value.
+Output strictly valid JSON:
+{
+  "code": "javascript string containing script block with a return statement",
+  "explanation": "short developer notes"
+}
+`;
+
+            try {
+                const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                const response = await fetchWithBackoff(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                        generationConfig: {
+                            responseMimeType: "application/json",
+                            responseSchema: {
+                                type: "OBJECT",
+                                properties: {
+                                    code: { type: "STRING" },
+                                    explanation: { type: "STRING" }
+                                },
+                                required: ["code", "explanation"]
+                            }
+                        }
+                    })
+                });
+
+                const resData = await response.json();
+                const result = JSON.parse(resData.candidates[0].content.parts[0].text);
+                
+                logConsoleEvent('AUTOPILOT_ARCHITECT', `Architect code compiled successfully: ${result.explanation}`, 'success');
+                document.getElementById('scriptPayload').value = result.code;
+            } catch (err) {
+                logConsoleEvent('AUTOPILOT_ARCHITECT', `Subsystem error: ${err.message}`, 'error');
+            }
+        }
+
+        function downloadBridgeZip() {
+            logConsoleEvent('COMPILER', 'Building MV3 framework, proxied content relays, background CDP service workers, and instruction assets...');
+            triggerToastNotification('Assembling Package', 'Generating unpackaged agent helper extension ZIP bundle...');
+
+            const manifest = {
+                "manifest_version": 3,
+                "name": "I am canceled Agent Bridge Helper",
+                "version": "1.2.0",
+                "description": "Cross-origin transparent postMessage proxy with native CDP clicks, key triggers, screenshots, and visual feedback for the harness app.",
+                "permissions": [
+                    "activeTab",
+                    "scripting",
+                    "tabs",
+                    "debugger"
+                ],
+                "host_permissions": [
+                    "<all_urls>"
+                ],
+                "background": {
+                    "service_worker": "background.js"
+                },
+                "content_scripts": [
+                    {
+                        "matches": ["<all_urls>"],
+                        "js": ["content_script.js"],
+                        "run_at": "document_start",
+                        "all_frames": true,
+                        "match_about_blank": true
+                    }
+                ]
+            };
+
+            const backgroundJS = `// background.js - MV3 service worker
+chrome.runtime.onConnectExternal.addListener((port) => {});
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    handleRelayRequest(request, sendResponse);
+    return true;
+});
+
+async function executeCDPAction(tabId, actionFn) {
+    try {
+        await chrome.debugger.attach({ tabId }, "1.3");
+    } catch (err) {
+        if (!err.message.includes("Already attached")) {
+            throw err;
+        }
+    }
+    try {
+        const result = await actionFn();
+        return result;
+    } finally {
+        try {
+            await chrome.debugger.detach({ tabId });
+        } catch (e) {}
+    }
+}
+
+async function handleRelayRequest(request, sendResponse) {
+    try {
+        switch (request.action) {
+            case 'ping':
+                sendResponse({ status: 'ok', version: '1.2.0' });
+                break;
+
+            case 'list_tabs':
+                chrome.tabs.query({}, (tabs) => {
+                    sendResponse({ status: 'ok', tabs: tabs.map(t => ({ id: t.id, title: t.title, url: t.url })) });
+                });
+                break;
+
+            case 'navigate':
+                chrome.tabs.update(request.tabId, { url: request.url }, (tab) => {
+                    const listener = (tabId, changeInfo) => {
+                        if (tabId === request.tabId && changeInfo.status === 'complete') {
+                            chrome.tabs.onUpdated.removeListener(listener);
+                            sendResponse({ status: 'ok', tabId: tabId });
+                        }
+                    };
+                    chrome.tabs.onUpdated.addListener(listener);
+                });
+                break;
+
+            case 'execute_script':
+                try {
+                    const result = await executeCDPAction(request.tabId, async () => {
+                        const wrappedScript = \`(() => { \${request.script} })\`;
+                        const evalResult = await chrome.debugger.sendCommand(
+                            { tabId: request.tabId },
+                            "Runtime.evaluate",
+                            { expression: wrappedScript, returnByValue: true }
+                        );
+                        if (evalResult.exceptionDetails) {
+                            throw new Error(evalResult.exceptionDetails.exception?.description || evalResult.exceptionDetails.text || 'Evaluation exception');
+                        }
+                        return evalResult.result?.value;
+                    });
+                    sendResponse({ status: 'ok', result: result });
+                } catch (err) {
+                    sendResponse({ status: 'error', error: err.message });
+                }
+                break;
+
+            case 'click_selector':
+                chrome.scripting.executeScript({
+                    target: { tabId: request.tabId },
+                    func: (selector) => {
+                        const el = document.querySelector(selector);
+                        if (el) {
+                            el.focus();
+                            el.click();
+                            return { clicked: true, tagName: el.tagName };
+                        }
+                        return { clicked: false, error: 'Selector was not found' };
+                    },
+                    args: [request.selector]
+                }, (results) => {
+                    if (chrome.runtime.lastError) {
+                        sendResponse({ status: 'error', error: chrome.runtime.lastError.message });
+                    } else {
+                        sendResponse({ status: 'ok', result: results[0]?.result });
+                    }
+                });
+                break;
+
+            case 'click_coords':
+                await executeCDPAction(request.tabId, async () => {
+                    await chrome.debugger.sendCommand({ tabId: request.tabId }, "Input.dispatchMouseEvent", {
+                        type: "mousePressed", x: request.x, y: request.y, button: "left", clickCount: 1
+                    });
+                    await chrome.debugger.sendCommand({ tabId: request.tabId }, "Input.dispatchMouseEvent", {
+                        type: "mouseReleased", x: request.x, y: request.y, button: "left", clickCount: 1
+                    });
+                });
+                sendResponse({ status: 'ok', result: { clicked: true } });
+                break;
+
+            case 'key_press':
+                await executeCDPAction(request.tabId, async () => {
+                    const isEnter = request.key === 'Enter';
+                    if (isEnter) {
+                        await chrome.debugger.sendCommand({ tabId: request.tabId }, "Input.dispatchKeyEvent", {
+                            type: "rawKeyDown", 
+                            key: "Enter",
+                            code: "Enter",
+                            windowsVirtualKeyCode: 13,
+                            unmodifiedText: "\\\r",
+                            text: "\\\r"
+                        });
+                        await chrome.debugger.sendCommand({ tabId: request.tabId }, "Input.dispatchKeyEvent", {
+                            type: "char", 
+                            key: "Enter",
+                            code: "Enter",
+                            windowsVirtualKeyCode: 13,
+                            unmodifiedText: "\\\r",
+                            text: "\\\r"
+                        });
+                        await chrome.debugger.sendCommand({ tabId: request.tabId }, "Input.dispatchKeyEvent", {
+                            type: "keyUp", 
+                            key: "Enter",
+                            code: "Enter",
+                            windowsVirtualKeyCode: 13
+                        });
+                    } else {
+                        await chrome.debugger.sendCommand({ tabId: request.tabId }, "Input.dispatchKeyEvent", {
+                            type: "rawKeyDown", 
+                            key: request.key
+                        });
+                        await chrome.debugger.sendCommand({ tabId: request.tabId }, "Input.dispatchKeyEvent", {
+                            type: "keyUp", 
+                            key: request.key
+                        });
+                    }
+                });
+                sendResponse({ status: 'ok' });
+                break;
+
+            case 'key_combo':
+                await executeCDPAction(request.tabId, async () => {
+                    const parts = request.combo.toLowerCase().split('+');
+                    let modifiers = 0;
+                    if (parts.includes('alt')) modifiers |= 1;
+                    if (parts.includes('ctrl') || parts.includes('control')) modifiers |= 2;
+                    if (parts.includes('meta') || parts.includes('cmd')) modifiers |= 4;
+                    if (parts.includes('shift')) modifiers |= 8;
+                    const keyChar = parts[parts.length - 1];
+
+                    await chrome.debugger.sendCommand({ tabId: request.tabId }, "Input.dispatchKeyEvent", {
+                        type: "rawKeyDown", modifiers: modifiers, key: keyChar, text: keyChar
+                    });
+                    await chrome.debugger.sendCommand({ tabId: request.tabId }, "Input.dispatchKeyEvent", {
+                        type: "keyUp", modifiers: modifiers, key: keyChar, text: keyChar
+                    });
+                });
+                sendResponse({ status: 'ok' });
+                break;
+
+            case 'type_text':
+                await executeCDPAction(request.tabId, async () => {
+                    const textStr = request.text;
+                    for (let i = 0; i < textStr.length; i++) {
+                        const char = textStr[i];
+                        if (char === '\\n') {
+                            await chrome.debugger.sendCommand({ tabId: request.tabId }, "Input.dispatchKeyEvent", {
+                                type: "rawKeyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, unmodifiedText: '\\\r', text: '\\\r'
+                            });
+                            await chrome.debugger.sendCommand({ tabId: request.tabId }, "Input.dispatchKeyEvent", {
+                                type: "char", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, unmodifiedText: '\\\r', text: '\\\r'
+                            });
+                            await chrome.debugger.sendCommand({ tabId: request.tabId }, "Input.dispatchKeyEvent", {
+                                type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13
+                            });
+                        } else {
+                            await chrome.debugger.sendCommand({ tabId: request.tabId }, "Input.dispatchKeyEvent", {
+                                type: "keyDown", text: char, key: char
+                            });
+                            await chrome.debugger.sendCommand({ tabId: request.tabId }, "Input.dispatchKeyEvent", {
+                                type: "keyUp", text: char, key: char
+                            });
+                        }
+                        await new Promise(r => setTimeout(r, 40));
+                    }
+                });
+                sendResponse({ status: 'ok' });
+                break;
+
+            case 'capture_screenshot':
+                try {
+                    const result = await executeCDPAction(request.tabId, async () => {
+                        await chrome.debugger.sendCommand({ tabId: request.tabId }, "Page.enable");
+                        const response = await chrome.debugger.sendCommand(
+                            { tabId: request.tabId },
+                            "Page.captureScreenshot",
+                            { format: "jpeg", quality: 80 }
+                        );
+                        return "data:image/jpeg;base64," + response.data;
+                    });
+                    sendResponse({ status: 'ok', dataUrl: result });
+                } catch (err) {
+                    chrome.tabs.get(request.tabId, (tab) => {
+                        if (chrome.runtime.lastError || !tab) {
+                            sendResponse({ status: 'error', error: chrome.runtime.lastError?.message || 'Specified tab is unreachable' });
+                            return;
+                        }
+                        chrome.tabs.captureVisibleTab(tab.windowId, { format: 'jpeg', quality: 80 }, (dataUrl) => {
+                            if (chrome.runtime.lastError) {
+                                sendResponse({ status: 'error', error: chrome.runtime.lastError.message });
+                            } else {
+                                sendResponse({ status: 'ok', dataUrl: dataUrl });
+                            }
+                        });
+                    });
+                }
+                break;
+
+            case 'get_dom_state':
+                chrome.scripting.executeScript({
+                    target: { tabId: request.tabId },
+                    func: () => {
+                        const interactiveElements = [];
+                        const walk = (node) => {
+                            if (node.nodeType === Node.ELEMENT_NODE) {
+                                const style = window.getComputedStyle(node);
+                                if (style.display !== 'none' && style.visibility !== 'hidden') {
+                                    const rect = node.getBoundingClientRect();
+                                    const isClickable = ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].includes(node.tagName) || 
+                                                       node.getAttribute('onclick') || 
+                                                       node.getAttribute('role') === 'button' ||
+                                                       style.cursor === 'pointer';
+                                    
+                                    const hasDirectText = Array.from(node.childNodes).some(c => c.nodeType === Node.TEXT_NODE && c.textContent.trim().length > 0);
+                                    const isTextNode = hasDirectText && !['SCRIPT', 'STYLE', 'NOSCRIPT'].includes(node.tagName);
+                                    
+                                    if ((isClickable || isTextNode) && rect.width > 0 && rect.height > 0) {
+                                        interactiveElements.push({
+                                            tag: node.tagName.toLowerCase(),
+                                            id: node.id || undefined,
+                                            className: node.className || undefined,
+                                            text: node.innerText?.trim().substring(0, 50) || undefined,
+                                            placeholder: node.placeholder || undefined,
+                                            type: node.type || undefined,
+                                            selector: getUniqueSelector(node),
+                                            rect: { x: Math.round(rect.left), y: Math.round(rect.top), w: Math.round(rect.width), h: Math.round(rect.height) }
+                                        });
+                                    }
+                                }
+                            }
+                            for (let child of node.childNodes) {
+                                walk(child);
+                            }
+                        };
+                        
+                        function getUniqueSelector(el) {
+                            if (el.id) return '#' + el.id;
+                            let path = [];
+                            while (el && el.nodeType === Node.ELEMENT_NODE) {
+                                let selector = el.nodeName.toLowerCase();
+                                if (el.className) {
+                                    const classesString = (typeof el.className === 'string') ? el.className : (el.className && typeof el.className.baseVal === 'string' ? el.className.baseVal : '');
+                                    const classes = classesString.trim().split(/\\s+/).filter(c => c.length > 0 && !c.includes(':'));
+                                    if (classes.length > 0) selector += '.' + classes.join('.');
+                                }
+                                let siblings = el.parentNode ? Array.from(el.parentNode.children).filter(child => child.nodeName === el.nodeName) : [];
+                                if (siblings.length > 1) {
+                                    let index = siblings.indexOf(el) + 1;
+                                    selector += ':nth-of-type(' + index + ')';
+                                }
+                                path.unshift(selector);
+                                el = el.parentNode;
+                            }
+                            return path.join(' > ');
+                        }
+
+                        walk(document.body);
+                        return {
+                            title: document.title,
+                            url: window.location.href,
+                            elements: interactiveElements.slice(0, 150)
+                        };
+                    }
+                }, (results) => {
+                    if (chrome.runtime.lastError) {
+                        sendResponse({ status: 'error', error: chrome.runtime.lastError.message });
+                    } else {
+                        sendResponse({ status: 'ok', domState: results[0]?.result });
+                    }
+                });
+                break;
+
+            default:
+                sendResponse({ status: 'error', error: 'Unknown request action' });
+                break;
+        }
+    } catch (err) {
+        sendResponse({ status: 'error', error: err.message });
+    }
+}`;
+
+            const contentJS = `// content_script.js
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.source === 'zenspace-page') {
+        const { requestId, payload } = event.data;
+        const sourceWindow = event.source; 
+        
+        try {
+            chrome.runtime.sendMessage(payload, (response) => {
+                const err = chrome.runtime.lastError;
+                sourceWindow.postMessage({
+                    source: 'zenspace-content-script',
+                    requestId: requestId,
+                    response: response || { status: 'error', error: err ? err.message : 'No response from background service worker' }
+                }, '*');
+            });
+        } catch (e) {
+            sourceWindow.postMessage({
+                source: 'zenspace-content-script',
+                requestId: requestId,
+                response: { status: 'error', error: e.message }
+            }, '*');
+        }
+    }
+});`;
+
+            const readme = `===================================================
+I am canceled - Unpacked Agent Bridge Helper (v1.2.0)
+===================================================
+
+Installation Guide:
+-------------------
+1. Extract the downloaded "zenspace-agent-bridge.zip" to a local directory path.
+2. In Google Chrome, navigate to: chrome://extensions/
+3. Activate "Developer mode" in the upper-right corner.
+4. Click "Load unpacked" and open your local extracted folder directory.
+5. Choose the folder directory containing "manifest.json", "content_script.js", and "background.js".
+6. Return to this tab and refresh it. Connect Handshake will establish the automatic link immediately!
+
+Features Added:
+- Secure Content-Script relayer for standard website & iframe support.
+- CDP Native mouse click coordinates, delayed string flows, key_presses, and shortcut combinations.
+- Visual verify screenshot capture support.`;
+
+            try {
+                const zip = new JSZip();
+                zip.file("manifest.json", JSON.stringify(manifest, null, 2));
+                zip.file("background.js", backgroundJS);
+                zip.file("content_script.js", contentJS);
+                zip.file("README.txt", readme);
+
+                zip.generateAsync({ type: "blob" }).then((content) => {
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = URL.createObjectURL(content);
+                    downloadLink.download = "zenspace-agent-bridge.zip";
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    document.body.removeChild(downloadLink);
+                    logConsoleEvent('COMPILER', 'Extension code bundle compiled to ZIP successfully with content script proxy routing!', 'success');
+                    triggerToastNotification('Success', 'zenspace-agent-bridge.zip downloaded.', true);
+                });
+            } catch (err) {
+                logConsoleEvent('COMPILER', `Assembling failed: ${err.message}`, 'error');
+                triggerToastNotification('Packaging Failed', `ZIP Compilation error: ${err.message}`, false);
+            }
+        }
+    </script>
+</body>
+</html>            --radius-md: 0.375rem;
+            --radius-lg: 0.5rem;  
+            --radius-xl: 0.75rem;
+            --radius-full: 9999px;
+
+            --transition: 160ms cubic-bezier(0.16, 1, 0.3, 1);
+
+            --color-bg: #0d0f12;
+            --color-surface: #131619;
+            --color-surface-2: #181c20;
+            --color-surface-offset: #1d2228;
+            --color-border: #252c35;
+            --color-divider: #1e2530;
+            --color-text: #c8d4e0;
+            --color-text-muted: #6b7a8a;
+            --color-text-faint: #3d4a56;
+            --color-primary: #3ecfcf;
+            --color-primary-glow: rgba(62, 207, 207, 0.15);
+        }
+
+        [data-theme="light"] {
+            --color-bg: #f5f7f9;
+            --color-surface: #ffffff;
+            --color-surface-2: #f0f2f5;
+            --color-surface-offset: #e4e7eb;
+            --color-border: #d2d6dc;
+            --color-divider: #e5e8eb;
+            --color-text: #1f2937;
+            --color-text-muted: #4b5563;
+            --color-text-faint: #9ca3af;
+            --color-primary: #0891b2;
+            --color-primary-glow: rgba(8, 145, 178, 0.1);
+        }
+
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-family: var(--font-body);
+            transition: background-color var(--transition), color var(--transition);
+        }
+
+        .premium-card {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-xl);
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.3);
+            transition: border-color var(--transition), background-color var(--transition);
+        }
+
+        .premium-card:hover {
+            border-color: var(--color-primary);
+        }
+
+        .font-mono-custom {
+            font-family: var(--font-mono) !important;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--color-bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--color-border);
+            border-radius: var(--radius-full);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--color-primary);
+        }
+
+        .glowing-dot {
+            box-shadow: 0 0 10px var(--color-primary);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+    <header class="border-b border-[var(--color-divider)] bg-[var(--color-surface)] px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm shrink-0">
+        <div class="flex items-center space-x-4">
+            <div class="p-2.5 bg-brand-500/10 text-[var(--color-primary)] rounded-xl border border-[var(--color-primary)]/30 shadow-lg shadow-cyan-500/5">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-lg font-extrabold tracking-tight font-mono-custom flex items-center gap-2">
+                    I am canceled <span class="text-[var(--color-primary)] text-xs font-semibold px-2 py-0.5 bg-[var(--color-primary-glow)] rounded-md border border-[var(--color-primary)]/20">AGENT HARNESS</span>
+                </h1>
+                <p class="text-[11px] text-[var(--color-text-muted)] tracking-wider uppercase font-mono-custom">PRESENTS: a generic autobrowsing agent harness</p>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+            <div id="statusPill" class="flex items-center space-x-2 bg-rose-500/10 dark:bg-rose-950/20 border border-rose-500/30 px-3.5 py-1.5 rounded-full text-xs font-medium text-rose-400 font-mono-custom transition-all duration-300">
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse glowing-dot" id="statusDot"></span>
+                <span class="tracking-wider text-[10px]" id="statusText">BRIDGE: OFFLINE</span>
+            </div>
+
+            <button onclick="downloadBridgeZip()" class="flex items-center space-x-2 px-3.5 py-1.5 bg-[var(--color-primary)] hover:bg-cyan-600 text-[var(--color-bg)] text-xs font-bold rounded-lg shadow-md transition-colors font-mono-custom">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                </svg>
+                <span>Compile Extension ZIP</span>
+            </button>
+
             <button id="themeToggle" onclick="toggleTheme()" class="p-2 text-[var(--color-text-muted)] hover:text-[var(--color-text)] bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-lg transition-colors">
             </button>
         </div>
