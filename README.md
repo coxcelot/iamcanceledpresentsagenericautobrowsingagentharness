@@ -1,4 +1,4 @@
-Similar to:
+###Similar to:
 
 Perplexity's Comet Brower Assistant's Browser Control tool if it had a recordable macro mapper.
 
@@ -10,7 +10,7 @@ WebDriver for as reliable as it can be for what parts it can do.
 
 Many other Browser-use mcps and harnesses where you have to trust inputting your api, but not here you don't.
 
-Use cases: 
+###Use cases: 
 
 easy recordable macros of automated a.i. guided agentic 'skills'
 
@@ -31,7 +31,7 @@ no-cost-inference in google chrome on desktop via gemini nano api fallback
 no-cost-inference in other browsers if launched in the canvas tool of gemini's web app
 
 
-to use:
+###to use:
 
 Open gemini.google.com
 
@@ -50,7 +50,7 @@ click the preview tab and you can test the first actual working version
 
 <img width="565" height="813" alt="image" src="https://github.com/user-attachments/assets/86ae045a-da4b-4b47-bd30-56c88d5e52aa" />
 
-Special Mentions: 
+###Special Mentions: 
 (I know I'm gonna forget people, so i'll go back and add people when i know what to credit them with for contribution)
 
 SpaceOrca for introducing me to the concepts of interactive artifact generation.
