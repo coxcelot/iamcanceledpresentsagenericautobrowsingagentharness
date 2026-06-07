@@ -1,3 +1,5 @@
+https://www.youtube.com/watch?v=cThPKgEmTi4
+
 ###Similar to:
 
 Perplexity's Comet Brower Assistant's Browser Control tool if it had a recordable macro mapper.
