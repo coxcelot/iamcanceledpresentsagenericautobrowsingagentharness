@@ -47,10 +47,11 @@ there will be 2 tabs on the side-by-side window that opens in the gemini chat, (
 
 when it finishes loading paste in index.html's code
 
-click the preview tab and you can test the first actual working version
+click the preview tab and you can test the new updated version!
+
+<img width="572" height="737" alt="image" src="https://github.com/user-attachments/assets/46e3a7e7-cb6e-4c43-bb0f-270c95358ae1" />
 
 
-<img width="565" height="813" alt="image" src="https://github.com/user-attachments/assets/86ae045a-da4b-4b47-bd30-56c88d5e52aa" />
 
 ###Special Mentions: 
 (I know I'm gonna forget people, so i'll go back and add people when i know what to credit them with for contribution)
